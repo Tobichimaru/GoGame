@@ -1,10 +1,10 @@
 import java.awt.*;
 
-public class Board extends Component {
+public class Board extends Component implements IBoard {
     private Image board, pwhite, pblack;
     private List pieces;
     private int width, height, num_squares; //width and height of each square and number of squares
-    private int max, min; //edges of board
+    private int xmax, xmin, ymin, ymax; //edges of board
     private MoveStack undo_stack, redo_stack;
     private Player p1, p2;
 	
@@ -22,12 +22,12 @@ public class Board extends Component {
         pblack = b;
         width = 19;
         height = 19;
-        min = -8;
-        max = 391;
+        ymin = 80;
+        ymax = 615;
+        xmin = 35;
+        xmax = 560;
         this.p1 = p1;
         this.p2 = p2;
-        
-        
     }
 
     public void setImage(Image img){
@@ -169,7 +169,7 @@ public class Board extends Component {
 
         System.out.println ("PLAY"+ x + " " + y);
         //if a peice can't be played there return false else return true
-        if (x < min || y < min || x > max || y > max) {
+        if (x < xmin || y < ymin || x > xmax || y > ymax) {
             result = false;
         } else if (pieces.isEmpty () == false) {
             if ((isPieceAt (x, y)) || (isSurrounded (x, y, color))) {
@@ -358,7 +358,7 @@ public class Board extends Component {
                     here.setLiberties (here.getLiberties () + 1);
 
                     System.out.println (here.getLiberties());
-                } else if (l < min || l > max || h > max || h < min) {
+                } else if (l < xmin || l > xmax || h > ymax || h < ymin) {
                     liberties++;
                 }       
 
@@ -387,7 +387,7 @@ public class Board extends Component {
     protected void paintComponent (Graphics g, Frame a) {
         System.out.println("Board paint!");
         boolean result = true;
-        g.drawImage(board, 0, 0, a);
+        g.drawImage(board, 0, 45, a);
 
         //Draw all Pieces
         pieces.gotoBeginning ();
@@ -406,8 +406,8 @@ public class Board extends Component {
     public void Score (Player p1, Player p2) {
         int black_score=0, white_score=0;
         int x, y, tmp=0;
-        for (x=min;x<=max;x+=height) {
-            for (y=min;y<=max;y+=height) {
+        for (x = xmin;x <= xmax; x += height) {
+            for (y = ymin; y <= ymax; y += height) {
                 if (!isPieceAt(x, y)) {
                     tmp = Score_Sub(x, y, 0);
                 }
@@ -419,8 +419,8 @@ public class Board extends Component {
             }
         }
 
-        for (x=min;x<=max;x+=height) {
-            for (y=min;y<=max;y+=height) {
+        for (x = xmin;x <= xmax; x += height) {
+            for (y = ymin; y <= ymax; y += height) {
                 if (isPieceAt (x, y)) {
                     if (((Piece)pieces.getCursor()).getColor () == 2) {
                         pieces.remove();
@@ -429,8 +429,8 @@ public class Board extends Component {
             }
         }
 
-        for (x=min;x<=max;x+=height) {
-            for (y=min;y<=max;y+=height) {
+        for (x = xmin;x <= xmax; x += height) {
+            for (y = ymin; y <= ymax; y += height) {
                 if (!isPieceAt (x, y)) {
                     tmp = Score_Sub (x, y, 1);
                 }
@@ -442,8 +442,8 @@ public class Board extends Component {
             }
         }
 
-        for (x=min;x<=max;x+=height) {
-            for (y=min;y<=max;y+=height) {
+        for (x = xmin;x <= xmax; x += height) {
+            for (y = ymin; y <= ymax; y += height) {
                 if (isPieceAt (x, y)) {
                     if (((Piece)pieces.getCursor()).getColor () == 2) {
                         pieces.remove();
@@ -468,7 +468,7 @@ public class Board extends Component {
             opp_color = 0;
 
 
-        if (x >= min && y >= min && x <= max && y <= max) {
+        if (x >= xmin && y >= ymin && x <= xmax && y <= ymax) {
             p = new Piece (x, y, 2);
             pieces.gotoEnd ();
             pieces.insert (p);
@@ -502,8 +502,8 @@ public class Board extends Component {
         if (color == 1)
             opp_color = 0;
 
-        for (int x=min;x<=max;x+=height) {
-            for (int y=min;y<=max;y+=height) {
+        for (int x = xmin; x <= xmax; x += height) {
+            for (int y = ymin; y <= ymax;y += height) {
                 if (isPieceAt(x, y)) {
                     if (((Piece)pieces.getCursor()).getColor() == opp_color) {
                         num_opp++;
@@ -514,4 +514,5 @@ public class Board extends Component {
 
         return (p.getMoves() - num_opp);
     }
+
 }

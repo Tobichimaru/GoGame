@@ -1,7 +1,7 @@
 import java.awt.*;
 import javax.swing.JFrame;
 
-public class GameFrame extends Frame {
+public class GameFrame extends Frame implements IGameFrame {
     protected MenuBar menubar;
     protected MenuItem newGameItem, restartGameItem, loadGameItem, saveGameItem, exitGameItem;
     protected MenuItem undoItem, redoItem;
@@ -20,9 +20,13 @@ public class GameFrame extends Frame {
         this.height = height;
         this.game = (GoGame)app;
         setResizable(false);
-        
+        syncMenu();
+        resize(605, 645);
+    }
+    
+    public void syncMenu() {
         menubar = new MenuBar();
-        
+       
         newGameItem = new MenuItem("New Game");
         restartGameItem = new MenuItem("Restart Game");
         loadGameItem = new MenuItem("Load Game");
@@ -46,7 +50,6 @@ public class GameFrame extends Frame {
         menubar.add(m2);
 
         setMenuBar(menubar);
-         resize(400,400);
     }
     
     @Override

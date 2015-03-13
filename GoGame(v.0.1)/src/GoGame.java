@@ -2,15 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.net.Socket;
 import static java.lang.System.exit;
 
-public class GoGame extends JFrame implements MouseListener {
+public class GoGame extends JFrame implements IGoGame {
     private Board board;
     private Image board_img, white_stone, black_stone; 
     private Player p1, p2, current_player;
-    private final int sizepiece = 16;
+    private final int sizepiece = 28;
     private GameFrame frame;
     boolean usingP2P = false;
     boolean goFirst = true;
@@ -18,6 +17,7 @@ public class GoGame extends JFrame implements MouseListener {
     int turn;
     PrintStream os;
     Socket s;
+    Piece p;
     
     public GoGame() {
         turn = 0;
@@ -56,20 +56,18 @@ public class GoGame extends JFrame implements MouseListener {
         current_player = p1;
 
         setBackground(Color.black);
-        board_img = Toolkit.getDefaultToolkit().getImage("D:\\study\\курсач\\GoGame(v.0.1)\\src\\boardgrid.jpg");
-        white_stone = Toolkit.getDefaultToolkit().getImage("D:\\study\\курсач\\GoGame(v.0.1)\\src\\white.png");
-        black_stone = Toolkit.getDefaultToolkit().getImage("D:\\study\\курсач\\GoGame(v.0.1)\\src\\black.png");
+        board_img = Toolkit.getDefaultToolkit().getImage("src\\board.png");
+        white_stone = Toolkit.getDefaultToolkit().getImage("src\\white.png");
+        black_stone = Toolkit.getDefaultToolkit().getImage("src\\black.png");
         
         board = new Board(board_img, white_stone, black_stone, p1, p2);
         
-        frame = new GameFrame(this, 415,475, board);
+        frame = new GameFrame(this, 605, 645, board);
         frame.add(board);
         frame.addMouseListener(this);
         
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         frame.setVisible(true);
-        
-       
     }
 
     public void mouseEntered(MouseEvent e) {
@@ -89,82 +87,46 @@ public class GoGame extends JFrame implements MouseListener {
         int y = e.getY();
         if (myTurn) {
             Move m, mo;
-            // normalize mouse click position on board
-            int xTest = (x/19) ;
-            int yTest = (y/19) ;
-
-            double xx = xTest + .5;
-            double yy = yTest + .5;
-
-            double xTest2 = ((double)x/19);
-            if (xTest2 > xx) {
-                x = (x/19)*19 + 19;
-            } else {
-                x = (x/19)*19;
-            }
-        
-            double yTest2 = ((double)y/19);
-            if (yTest2 > yy) {
-                y =  (y/19)*19 + 19;
-            } else {
-                y = (y/19)*19;
-            }
-
-            System.out.println("Mouse After: " + x + " " + y);
-
-            if (usingP2P) {
-                os.println("m:"+x+":"+y);
-                os.flush();
-                myTurn = false;
-            }
+            x -= 38;
+            y -= 80;
+            int xTest = (x/sizepiece);
+            int yTest = (y/sizepiece);
+            x = 38 + xTest*sizepiece;
+            y = 80 + yTest*sizepiece;
+            
+//            if (usingP2P) {
+//                os.println("m:"+x+":"+y);
+//                os.flush();
+//                myTurn = false;
+//            }
 
             if (e.isShiftDown()) {
                 board.Undo();
-                if (current_player == p1) {
-                    turn = 1;
-                    current_player = p2;
-                } else {
-                    turn = 0;
-                    current_player = p1;
-                }
+                changeTurn();
             } else if (e.isControlDown()) {
                 current_player.setPass (true);
-
                 if (p1.getPass() == true && p2.getPass () == true)
                     Score();	
-
-                if (current_player == p1) {
-                    turn = 1;
-                    current_player = p2;
-                } else {
-                    turn = 0;
-                    current_player = p1;
-                }
-
-                //board.SaveState ();
+                changeTurn();
+                board.SaveState ();
             } else {
-                Piece p = new Piece(x-(sizepiece)/2, y-(sizepiece)/2, turn);
-                m = new Move (x-(sizepiece)/2, y-(sizepiece)/2);
-
-                if (board.Play (p)) {
+                p = new Piece(x, y, turn);
+                m = new Move (x, y);
+                if (board.Play(p)) {
+                    changeTurn();
                     if (current_player == p1) {
                         p1.addMove();
-                        turn = 1;
-                        current_player = p2;
                     } else {
                         p2.addMove();
-                        turn = 0;
-                        current_player = p1;
                     }
                 }
             }
-            
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                     board.repaint();
-                }
-            });
+                    @Override
+                    public void run() {
+                        board.repaint();
+                    }
+                });
         }
     }
 	
@@ -195,7 +157,7 @@ public class GoGame extends JFrame implements MouseListener {
 
         System.out.println("Mouse After: " + x + " " + y);
 
-        Piece p = new Piece (x-(sizepiece)/2, y-(sizepiece)/2, turn);
+        final Piece p = new Piece (x-(sizepiece)/2, y-(sizepiece)/2, turn);
         m = new Move (x-(sizepiece)/2, y-(sizepiece)/2);
 
         if (board.Play (p)) {
@@ -213,7 +175,7 @@ public class GoGame extends JFrame implements MouseListener {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                 board.repaint ();
+                p.setVisible(true);
             }
         });
         return true;
@@ -252,16 +214,8 @@ public class GoGame extends JFrame implements MouseListener {
 
     public void Undo() {
         board.Undo();
-        System.out.println ("UNDO");
-        if (current_player == p1) {
-            turn = 1;
-            current_player = p2;
-        } else {
-            turn = 0;
-            current_player = p1;
-        }
-
-       javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        changeTurn();
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                  board.repaint ();
@@ -271,7 +225,16 @@ public class GoGame extends JFrame implements MouseListener {
 
     public void Redo() {
         board.Redo();
-
+        changeTurn();
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                 board.repaint();
+            }
+        });
+    }
+    
+    private void changeTurn() {
         if (current_player == p1) {
             turn = 1;
             current_player = p2;
@@ -279,12 +242,5 @@ public class GoGame extends JFrame implements MouseListener {
             turn = 0;
             current_player = p1;
         }
-
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                 board.repaint();
-            }
-        });
     }
 }
