@@ -3,17 +3,17 @@ import java.util.ArrayList;
 public class Saved_State {
     private int p1_moves;
     private int p2_moves;
-    List pieces;
+    ArrayList<Piece> pieces;
 
     Saved_State () {
-        this.pieces = new List();
+        this.pieces = new ArrayList<>();
         p1_moves = 0;
         p2_moves = 0;
         this.pieces = null;		
     }
 
-    Saved_State (int p1, int p2, List pieces) {
-        this.pieces = new List();
+    Saved_State (int p1, int p2, ArrayList<Piece> pieces) {
+        this.pieces = new ArrayList<>();
         p1_moves = p1;
         p2_moves = p2;
         this.pieces = pieces;
@@ -35,11 +35,11 @@ public class Saved_State {
         return p2_moves;
     }
 
-    public void setPieces (List pieces) {
+    public void setPieces (ArrayList<Piece> pieces) {
         this.pieces = pieces;
     }
 
-    public List getPieces () {
+    public ArrayList<Piece> getPieces () {
         return pieces;
     }
 }

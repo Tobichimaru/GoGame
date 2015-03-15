@@ -17,5 +17,4 @@ public interface IGoGame extends MouseListener {
     void mousePressed(MouseEvent e);
     void mouseReleased(MouseEvent e);
     void mouseClicked(MouseEvent e);
-    boolean mouseDownServer(int x, int y);
 }
