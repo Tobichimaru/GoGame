@@ -2,10 +2,9 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Board extends Component implements IBoard {
-    private Image board, pwhite, pblack;
-    private ArrayList<Piece> pieces;
-    private int sizepiece = 28;
-    private int xmax, xmin, ymin, ymax; //edges of board
+    private Image board_img, white_stone, black_stone;
+    private ArrayList<Stone> pieces;
+    private int array_board [][]; 
     private int curr_move;
     private Player p1, p2;
 	
@@ -15,74 +14,111 @@ public class Board extends Component implements IBoard {
 
     Board(Image img, Image w, Image b, Player p1, Player p2) {
         pieces = new ArrayList<>();
-        board = img;
-        pwhite = w;
-        pblack = b;
-        ymin = 80;
-        ymax = 615;
-        xmin = 35;
-        xmax = 560;
+        array_board = new int[20][20];
+        for (int i = 0; i < 19; i++) {
+            for (int j = 0; j < 19; j++) {
+                array_board[i][j] = -1;
+            }
+        }
+        board_img = img;
+        white_stone = w;
+        black_stone = b;
         this.p1 = p1;
         this.p2 = p2;
         curr_move = 0;
     }
 
-    protected void paintComponent (Graphics g, Frame a) {
-        g.drawImage(board, 0, 45, a);
-        Piece p = new Piece(0,0,0);
+    protected void paintComponent(Graphics g, Frame a) {
+        g.drawImage(board_img, 0, 45, a);
+        Stone p = new Stone();
         for (int i = 0; i < curr_move; i++) {
             p = pieces.get(i);
-            if (p.getColor() == 0) {
-                g.drawImage(pwhite, p.getX(), p.getY(), a);
-            } else {
-                g.drawImage(pblack, p.getX(), p.getY(), a);
+            if (p.isVisible()) {
+                if (p.getColor() == 0) {
+                    g.drawImage(black_stone, p.getX(), p.getY(), a);
+                } else {
+                    g.drawImage(white_stone, p.getX(), p.getY(), a);
+                }
             }
         }
     }
 
     @Override
-    public void Play(Piece p) {
-        addPiece(p);
-        Piece j = new Piece(0,0,0);
-        for (int i = 0; i < curr_move; i++) {
-            j = pieces.get(i);
-            if (isSurrounded(j.getX(), j.getY(), j.getColor())) {
-                System.out.println("remove and surrond");
-                pieces.remove(i);
-                curr_move--;
-            } 
+    public void Play(int x, int y, int color) {
+        System.out.println(x);
+        System.out.println(y);
+        System.out.println(x/cellsize);
+        System.out.println(y/cellsize);
+        if (x < xmin || y < ymin || x > xmax || y > ymax 
+                || array_board[x/cellsize][y/cellsize] != -1) {
+            return;
+        } 
+        int other_color;
+        if (color == 0)
+            other_color = 1;
+        else
+            other_color = 0;
+        
+        int dead_groups = 0;
+        if (array_board[x/cellsize + 1][y/cellsize] != -1 &&
+                isSurrounded(x/cellsize + 1, y/cellsize, other_color)) {
+            dead_groups++;
         }
+        if (array_board[x/cellsize - 1][y/cellsize] != -1 &&
+                isSurrounded(x/cellsize - 1, y/cellsize, other_color)) {
+            dead_groups++;
+        }
+        if (array_board[x/cellsize][y/cellsize + 1] != -1 &&
+                isSurrounded(x/cellsize, y/cellsize + 1, other_color)) {
+            dead_groups++;
+        }
+        if (array_board[x/cellsize][y/cellsize - 1] != -1 &&
+                isSurrounded(x/cellsize, y/cellsize - 1, other_color)) {
+            dead_groups++;
+        }
+        Stone s = new Stone(x, y, curr_move);
+        addStone(s);
     }
     
-    private void addPiece(Piece p) {
+     private boolean isSurrounded(int x, int y, int color) {
+        Stone p = pieces.get(array_board[x][y]);
+        if (!p.isVisible()) {
+            return false;
+        }
+        if (color == 0)
+            color = 1;
+        else
+            color = 0;
+        
+        return false;
+    }
+    
+    private void addStone(Stone p) {
         pieces.add(p);
+        int x = p.getX()/cellsize;
+        int y = p.getY()/cellsize;
+        array_board[x][y] = pieces.size();
         curr_move++;
     }
     
     @Override
     public void Undo() {
-        if (curr_move > 0)
+        if (curr_move > 0) {
             curr_move--;
+            pieces.get(curr_move).setVisible(true);
+        }
     }
 
     @Override
     public void Redo() {
-        if (pieces.size() > curr_move) 
+        if (pieces.size() > curr_move) {
             curr_move++;
-    }
-
-    private int isPieceAt(int x, int y) {
-        for (int i = 0; i < pieces.size(); i++) {
-            if (pieces.get(i).getX() == x && pieces.get(i).getY() == y) {
-                return i;
-            }
         }
-        return -1;
     }
 
     @Override
-    public boolean removePiece(int x, int y) {
-        int pos = isPieceAt(x, y);
+    public boolean removeStone(int x, int y) {
+        int pos = array_board[x][y];
         if (pos != -1) {
             pieces.remove(pos);
             return true;
@@ -90,69 +126,6 @@ public class Board extends Component implements IBoard {
         return false;
     }
 
-    private boolean isSurrounded(int x, int y, int color) {
-        if (color == 0)
-            color = 1;
-        else
-            color = 0;
-
-        int up = isPieceAt(x, y - sizepiece);
-        int down = isPieceAt(x, y + sizepiece);
-        int left = isPieceAt(x - sizepiece, y);
-        int right = isPieceAt(x + sizepiece, y);
-        
-        if (up != -1 && down != -1 && left != -1 && right != -1) {
-            if (pieces.get(up).getColor() == color &&
-                pieces.get(down).getColor() == color &&
-                pieces.get(left).getColor() == color &&
-                pieces.get(right).getColor() == color) {
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isPlayable(int x, int y, int color) {
-        if (x < xmin || y < ymin || x > xmax || y > ymax) {
-            return false;
-        } 
-        if (pieces.isEmpty() == false) {
-            if (isPieceAt(x, y) != -1 || isSurrounded(x, y, color)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public Piece getPieceAt(int x, int y) {
-        Piece result = new Piece(0, 0, 0);
-        if (isPieceAt(x,y) == -1) {
-            return result;
-        }
-        result = pieces.get(isPieceAt(x,y));
-        return result;
-    }
-
-    @Override
-    public boolean DeleteLibsOf(Piece p, Piece caller) {
-        return true;
-    }
-
-    @Override
-    public void CheckLibs (Piece p) {
-    }
-
-
-    @Override
-    public void SaveState() {
-        Saved_State save_state = new Saved_State();
-        save_state.setP1_Moves(p1.getMoves ());
-        save_state.setP2_Moves(p2.getMoves ());
-        save_state.setPieces(pieces);
-    }
-    
     @Override
     public void Score (Player p1, Player p2) {
     }

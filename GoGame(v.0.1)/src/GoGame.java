@@ -1,29 +1,20 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.net.Socket;
 import static java.lang.System.exit;
 
 public class GoGame extends JFrame implements IGoGame {
     private GameFrame frame;
     private Board board;
-    private Player p1, p2, current_player;
-    private final int sizepiece = 28, width = 605, height = 645, xmargin = 38, ymargin = 80;
-    
-    boolean myTurn = false;
+    private Player p1, p2;
     int turn;
-    Socket s;
-    Piece p;
     
     public GoGame() {
-        turn = 1;
-        myTurn = true;
-        current_player = p1;
-        
+        turn = 0;
         Setup gameSetup = new Setup();
         gameSetup.show();
-        p1 = new Player (gameSetup.getPlayerOne());
-        p2 = new Player (gameSetup.getPlayerTwo());
+        p1 = new Player(gameSetup.getPlayerOne());
+        p2 = new Player(gameSetup.getPlayerTwo());
 
         board = new Board(
                 Toolkit.getDefaultToolkit().getImage("src\\board.png"), 
@@ -55,28 +46,23 @@ public class GoGame extends JFrame implements IGoGame {
     
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (!myTurn) {
-            return;
-        }
-        int x = ((int)(e.getX() - xmargin)/sizepiece) * sizepiece + xmargin;
-        int y = ((int)(e.getY() - ymargin)/sizepiece) * sizepiece + ymargin;
+        int x = ((int)(e.getX() - xmargin)/cellsize) * cellsize + xmargin;
+        int y = ((int)(e.getY() - ymargin)/cellsize) * cellsize + ymargin;
 
         if (e.isShiftDown()) {
             board.Undo();
-            changeTurn();
         } else if (e.isControlDown()) {
-            current_player.setPass(true);
+            if (turn == 0) {
+                p1.setPass(true);
+            } else {
+                p2.setPass(true);
+            }
             if (p1.getPass() == true && p2.getPass () == true)
                 Score();	
-            changeTurn();
-            board.SaveState();
         } else {
-            p = new Piece(x, y, turn);
-            if (board.isPlayable(p.getX(), p.getY(), p.getColor())) {
-                board.Play(p);
-                changeTurn();
-            }
+            board.Play(x, y, turn);
         }
+        turn = (turn == 0) ? 1 : 0;
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -87,8 +73,7 @@ public class GoGame extends JFrame implements IGoGame {
 	
     @Override
     public void Score() {
-        board.Score (p1, p2);
-
+        board.Score(p1, p2);
         if (p1.getScore() > p2.getScore()) {
             new WinnerDialog(p1.getName(), p1.getScore(), p2.getScore()).show();
         } else if (p1.getScore() < p2.getScore()) {
@@ -96,7 +81,6 @@ public class GoGame extends JFrame implements IGoGame {
         } else {
             new WinnerDialog("No One", p1.getScore(), p2.getScore()).show();
         }
-
         System.out.println ("Player 1 Score: " + p1.getScore ());
         System.out.println ("Player 2 Score: " + p2.getScore ());
     }
@@ -125,7 +109,7 @@ public class GoGame extends JFrame implements IGoGame {
     @Override
     public void Undo() {
         board.Undo();
-        changeTurn();
+        turn = (turn == 0) ? 1 : 0;
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -137,22 +121,12 @@ public class GoGame extends JFrame implements IGoGame {
     @Override
     public void Redo() {
         board.Redo();
-        changeTurn();
+        turn = (turn == 0) ? 1 : 0;
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                  board.repaint();
             }
         });
-    }
-    
-    private void changeTurn() {
-        if (current_player == p1) {
-            turn = 1;
-            current_player = p2;
-        } else {
-            turn = 0;
-            current_player = p1;
-        }
     }
 }
