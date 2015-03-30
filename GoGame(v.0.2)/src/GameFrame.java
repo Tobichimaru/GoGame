@@ -9,11 +9,20 @@ public class GameFrame extends Frame implements IGameFrame {
     protected GoGame game;
     protected int width, height;
     protected Panel p;
-    protected Board board;
+    protected Image w, b, img;
+    protected Player p1, p2;
+    public Board board;
 
-    public GameFrame(JFrame app, int width, int height, Board board) {
+    public GameFrame(JFrame app, int width, int height, Player p1, Player p2) {
         super("GoGame");
-        this.board = board;
+        
+        img = Toolkit.getDefaultToolkit().getImage("src\\board.png");
+        w = Toolkit.getDefaultToolkit().getImage("src\\white.png"); 
+        b = Toolkit.getDefaultToolkit().getImage("src\\black.png");
+        this.p1 = p1;
+        this.p2 = p2;
+        
+        board = new Board(img, w, b, p1, p2);
         this.width = width;
         this.height = height;
         this.game = (GoGame)app;
@@ -65,6 +74,8 @@ public class GameFrame extends Frame implements IGameFrame {
                 game.restartGame();
             } else if (e.target == loadGameItem) {
                 game.loadGame();
+                board.setImages(img, w, b);
+                
             } else if (e.target == saveGameItem) {
                 game.saveGame();
             } else if (e.target == exitGameItem) {

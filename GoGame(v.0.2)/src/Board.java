@@ -1,14 +1,20 @@
 import java.awt.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class Board extends Component implements IBoard {
+public class Board extends Component implements IBoard, Serializable {
     private Image board_img, white_stone, black_stone;
     private LinkedList<Stone> moves_stack;
     private ArrayList<Stone> stone_list;
     private int stone_array[][]; 
     private int curr_move;
     private Player p1, p2;
+    
+    private static final long serialVersionUID = -2518143671167959230L;
 	
     Board() {
         initilize();
@@ -21,6 +27,12 @@ public class Board extends Component implements IBoard {
         black_stone = b;
         this.p1 = p1;
         this.p2 = p2;
+    }
+    
+    public void setImages(Image img, Image w, Image b) {
+        board_img = img;
+        white_stone = w;
+        black_stone = b;
     }
     
     private void initilize() {
@@ -40,6 +52,7 @@ public class Board extends Component implements IBoard {
     }
 
     protected void paintComponent(Graphics g, Frame a) {
+        System.out.println("paint");
         g.drawImage(board_img, 0, 45, a);
         for (Stone s : stone_list) {
             if (s.getColor() == 0) {
@@ -50,12 +63,7 @@ public class Board extends Component implements IBoard {
         }
     }
 
-    public void Play(int x, int y, int color) {
-       // System.out.println(x);
-       // System.out.println(y);
-       // System.out.println(x/cellsize);
-       // System.out.println(y/cellsize);
-        
+    public void Play(int x, int y, int color) {        
         if (x < xmin || y < ymin || x > xmax || y > ymax 
                 || stone_array[x/cellsize][y/cellsize] != -1) {
             return;
@@ -65,7 +73,7 @@ public class Board extends Component implements IBoard {
         addStone(s);
     }
     
-     private boolean isSurrounded(int x, int y, int color) {
+    private boolean isSurrounded(int x, int y, int color) {
         return false;
     }
     
@@ -76,7 +84,7 @@ public class Board extends Component implements IBoard {
         curr_move++;
     }
     
-    private void clear() {
+    private void rewriteArray() {
         stone_list.clear();
         initlizeArray();
         Stone s = new Stone();
@@ -93,7 +101,7 @@ public class Board extends Component implements IBoard {
     public void Undo() {
         if (curr_move > 0) {
             curr_move--;
-            clear();
+            rewriteArray();
         }
     }
 
@@ -101,10 +109,11 @@ public class Board extends Component implements IBoard {
     public void Redo() {
         if (moves_stack.size() > curr_move) {
             curr_move++;
-            clear();
+            rewriteArray();
         }
     }
 
+    @Override
     public boolean removeStone(int x, int y) {
         int pos = stone_array[x][y];
         if (pos != -1) {
@@ -115,4 +124,29 @@ public class Board extends Component implements IBoard {
         return false;
     }
 
+    public void clear() {
+        moves_stack.clear();
+        stone_list.clear();
+        this.initlizeArray();
+    }
+    
+    private void writeObject(ObjectOutputStream o) throws IOException {  
+        o.writeObject(p1);  
+        o.writeObject(p2);
+        o.writeObject(curr_move);
+        o.writeObject(moves_stack);
+        o.writeObject(stone_list);
+        o.writeObject(stone_array);
+    }
+  
+    private void readObject(ObjectInputStream o) throws IOException, ClassNotFoundException {  
+        System.out.print("readObject");
+        p1 = (Player) o.readObject();  
+        p2 = (Player) o.readObject();
+        curr_move = (int) o.readObject();
+        moves_stack = (LinkedList<Stone>) o.readObject();
+        stone_list = (ArrayList<Stone>) o.readObject();
+        stone_array = (int[][]) o.readObject();
+        System.out.println(moves_stack.size());
+    }
 }

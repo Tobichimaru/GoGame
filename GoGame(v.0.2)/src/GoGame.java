@@ -1,13 +1,20 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import static java.lang.System.exit;
 
 public class GoGame extends JFrame implements IGoGame {
     private GameFrame frame;
-    private Board board;
     private Player p1, p2;
     int turn;
+    
+    private static final long serialVersionUID = -250003671167959230L;
     
     public GoGame() {
         turn = 0;
@@ -15,15 +22,8 @@ public class GoGame extends JFrame implements IGoGame {
         gameSetup.show();
         p1 = new Player(gameSetup.getPlayerOne());
         p2 = new Player(gameSetup.getPlayerTwo());
-
-        board = new Board(
-                Toolkit.getDefaultToolkit().getImage("src\\board.png"), 
-                Toolkit.getDefaultToolkit().getImage("src\\white.png"), 
-                Toolkit.getDefaultToolkit().getImage("src\\black.png"),
-                p1, p2);
-        
-        frame = new GameFrame(this, width, height, board);
-        frame.add(board);
+        frame = new GameFrame(this, width, height, p1, p2);
+        frame.add(frame.board);
         frame.addMouseListener(this);
         frame.setVisible(true);
     }
@@ -50,7 +50,7 @@ public class GoGame extends JFrame implements IGoGame {
         int y = ((int)(e.getY() - ymargin)/cellsize) * cellsize + ymargin;
 
         if (e.isShiftDown()) {
-            board.Undo();
+            frame.board.Undo();
         } else if (e.isControlDown()) {
             if (turn == 0) {
                 p1.setPass(true);
@@ -60,13 +60,13 @@ public class GoGame extends JFrame implements IGoGame {
             if (p1.getPass() == true && p2.getPass () == true)
                 Score();	
         } else {
-            board.Play(x, y, turn);
+            frame.board.Play(x, y, turn);
         }
         turn = (turn == 0) ? 1 : 0;
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                board.repaint();
+                frame.board.repaint();
             }
         });
     }
@@ -86,18 +86,57 @@ public class GoGame extends JFrame implements IGoGame {
 	
     @Override
     public void newGame() {
+        LocalPlayersNameWindow gameSetup = new LocalPlayersNameWindow();
+        gameSetup.show();
+        p1 = new Player(gameSetup.getPlayerOne());
+        p2 = new Player(gameSetup.getPlayerTwo());
+        frame.board.clear();
+        frame.board = new Board(
+               Toolkit.getDefaultToolkit().getImage("src\\board.png"), 
+               Toolkit.getDefaultToolkit().getImage("src\\white.png"), 
+               Toolkit.getDefaultToolkit().getImage("src\\black.png"),
+               p1, p2);
+          frame.board.repaint();
     }
 
     @Override
     public void restartGame() {
+        frame.board.clear();
+        frame.board.repaint();
     }
 
     @Override
     public void loadGame() {
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream("Savestate.txt");
+        } catch (FileNotFoundException ex) {
+            System.out.println("FileNotFoundException");
+        }
+        ObjectInputStream ois = null;
+        try {
+            ois = new ObjectInputStream(fis);
+            frame.board = (Board) ois.readObject();
+            ois.close();
+        } catch (IOException | ClassNotFoundException ex) {
+            System.out.println("ClassNotFoundException");
+        }
     }
 
     @Override
     public void saveGame() {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream("Savestate.txt");
+        } catch (FileNotFoundException ex) {
+        }
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(fos);
+            oos.writeObject(frame.board);
+            fos.close();
+        } catch (IOException ex) {
+        }
     }
 
     @Override
@@ -107,24 +146,24 @@ public class GoGame extends JFrame implements IGoGame {
 
     @Override
     public void Undo() {
-        board.Undo();
+        frame.board.Undo();
         turn = (turn == 0) ? 1 : 0;
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                 board.repaint();
+                 frame.board.repaint();
             }
         });
     }
 
     @Override
     public void Redo() {
-        board.Redo();
+        frame.board.Redo();
         turn = (turn == 0) ? 1 : 0;
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                 board.repaint();
+                 frame.board.repaint();
             }
         });
     }

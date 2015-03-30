@@ -1,6 +1,10 @@
 import java.awt.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
-public class Stone extends Component {
+public class Stone extends Component implements Serializable {
     private int color; // 0 black 1 white
     private int x, y; // position on board
     private int xpos, ypos; // index in matrix
@@ -66,4 +70,21 @@ public class Stone extends Component {
     protected void paintComponent(Graphics g, Frame a, int x, int y, Image p) {
         g.drawImage(p, x, y, a);
     }
+    
+    private void writeObject(ObjectOutputStream o) throws IOException {  
+        o.writeObject(color);
+        o.writeObject(x);
+        o.writeObject(y);
+        o.writeObject(xpos);
+        o.writeObject(ypos);
+    }
+  
+    private void readObject(ObjectInputStream o) throws IOException, ClassNotFoundException {  
+        color = (int) o.readObject();
+        x = (int) o.readObject();
+        y = (int) o.readObject();
+        xpos = (int) o.readObject();
+        ypos = (int) o.readObject();
+    }
+
 }
