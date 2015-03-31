@@ -3,13 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Saia/Documents/GitHub/GoGame/GoGame(v.0.2)/src/GoGame.java</file>
-            <file>file:/C:/Users/Saia/Documents/GitHub/GoGame/GoGame(v.0.2)/src/IGoGame.java</file>
-            <file>file:/C:/Users/Saia/Documents/GitHub/GoGame/GoGame(v.0.2)/src/GameFrame.java</file>
-            <file>file:/C:/Users/Saia/Documents/GitHub/GoGame/GoGame(v.0.2)/src/IGameFrame.java</file>
+            <file>file:/C:/Users/Saia/Documents/GitHub/GoGame/GoGame(v.0.2)/src/Board.java</file>
             <file>file:/C:/Users/Saia/Documents/GitHub/GoGame/GoGame(v.0.2)/src/IBoard.java</file>
-            <file>file:/C:/Users/Saia/Documents/GitHub/GoGame/GoGame(v.0.2)/src/WinnerDialog.java</file>
-            <file>file:/C:/Users/Saia/Documents/GitHub/GoGame/GoGame(v.0.2)/src/SocketClient.java</file>
+            <file>file:/C:/Users/Saia/Documents/GitHub/GoGame/GoGame(v.0.2)/src/GameFrame.java</file>
+            <file>file:/C:/Users/Saia/Documents/GitHub/GoGame/GoGame(v.0.2)/src/IGoGame.java</file>
+            <file>file:/C:/Users/Saia/Documents/GitHub/GoGame/GoGame(v.0.2)/src/GoGame.java</file>
+            <file>file:/C:/Users/Saia/Documents/GitHub/GoGame/GoGame(v.0.2)/src/Player.java</file>
+            <file>file:/C:/Users/Saia/Documents/GitHub/GoGame/GoGame(v.0.2)/src/Stone.java</file>
         </group>
     </open-files>
 </project-private>
