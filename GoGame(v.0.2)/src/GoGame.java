@@ -60,9 +60,11 @@ public class GoGame extends JFrame implements IGoGame {
             if (p1.getPass() == true && p2.getPass () == true)
                 Score();	
         } else {
-            frame.board.Play(x, y, turn);
+            if (frame.board.Play(x, y, turn)) {
+                turn = (turn == 0) ? 1 : 0;
+            }
         }
-        turn = (turn == 0) ? 1 : 0;
+        
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

@@ -7,6 +7,6 @@ public interface IBoard {
     
     void Undo();
     void Redo();
-    boolean removeStone(int x, int y);
+    boolean removeStone(Stone s);
     
 }
