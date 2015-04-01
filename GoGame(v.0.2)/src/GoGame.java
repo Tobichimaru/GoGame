@@ -1,33 +1,107 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.*;
 import java.awt.event.MouseEvent;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.awt.event.MouseListener;
 import static java.lang.System.exit;
 
-public class GoGame extends JFrame implements IGoGame {
-    private GameFrame frame;
+public class GoGame extends JFrame implements IGoGame, MouseListener {
+    private MenuBar menubar;
+    private MenuItem newGameItem, restartGameItem, loadGameItem, saveGameItem, exitGameItem;
+    private MenuItem undoItem, redoItem, passItem;
+    private Menu m1, m2;
     private Player p1, p2;
-    int turn;
+    private Image w, b, img;
+    private int turn;
+    private DrawPanel panel;
     
     private static final long serialVersionUID = -250003671167959230L;
     
     public GoGame() {
-        turn = 0;
         LocalPlayersNameWindow gameSetup = new LocalPlayersNameWindow();
         gameSetup.show();
         p1 = new Player(gameSetup.getPlayerOne());
         p2 = new Player(gameSetup.getPlayerTwo());
-        frame = new GameFrame(this, width, height, p1, p2);
-        frame.add(frame.board);
-        frame.addMouseListener(this);
-        frame.setVisible(true);
+        img = Toolkit.getDefaultToolkit().getImage("src\\board.png");
+        w = Toolkit.getDefaultToolkit().getImage("src\\white.png"); 
+        b = Toolkit.getDefaultToolkit().getImage("src\\black.png");
+        syncMenu();
+        addMouseListener(this);
+        turn = 0;
+        panel = new DrawPanel(new Board(img, w, b, p1, p2));
+        resize(605, 645);
+        setResizable(false);
+        setTitle("Go Game");
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+       
+        add(panel);
+        setVisible(true);
+    }
+    
+    private void syncMenu() {
+        menubar = new MenuBar();
+       
+        newGameItem = new MenuItem("New Game");
+        restartGameItem = new MenuItem("Restart Game");
+        loadGameItem = new MenuItem("Load Game");
+        saveGameItem = new MenuItem("Save Game");
+        exitGameItem = new MenuItem("Exit Game");
+
+        m1 = new Menu("Game");
+        m1.add(newGameItem);
+        m1.add(restartGameItem);
+        m1.add(loadGameItem);
+        m1.add(saveGameItem);
+        m1.add(exitGameItem);
+        menubar.add(m1);
+
+        undoItem = new MenuItem("Undo");
+        redoItem = new MenuItem("Redo");
+        passItem = new MenuItem("Pass");
+        
+        m2 = new Menu("Edit");
+        m2.add(undoItem);
+        m2.add(redoItem);
+        m2.add(passItem);
+        menubar.add(m2);
+
+        setMenuBar(menubar);
     }
 
+    @Override
+    public boolean action(Event e, Object o) {
+        if (!(e.target instanceof MenuItem)) {
+            return false;
+        }
+        String s = (String)o;
+        if (e.target == newGameItem) {
+            newGame();
+        } else if (e.target == restartGameItem) {
+            restartGame();
+        } else if (e.target == loadGameItem) {
+            loadGame();
+            panel.board.setImages(img, w, b);
+        } else if (e.target == saveGameItem) {
+            saveGame();
+        } else if (e.target == exitGameItem) {
+            exitGame();
+        } else if (e.target == undoItem) {
+            Undo();
+        } else if (e.target == redoItem) {
+            Redo();
+        } else if (e.target == passItem) {
+            if (turn == 0) {
+                p1.setPass(true);
+            } else {
+                p2.setPass(true);
+            }
+            if (p1.getPass() == true && p2.getPass () == true)
+                Score();	
+        }
+        panel.repaint();
+        return true;
+    }
+    
     @Override
     public void mouseEntered(MouseEvent e) {
     }
@@ -46,31 +120,17 @@ public class GoGame extends JFrame implements IGoGame {
     
     @Override
     public void mouseClicked(MouseEvent e) {
-        int x = ((int)(e.getX() - xmargin)/cellsize) * cellsize + xmargin;
-        int y = ((int)(e.getY() - ymargin)/cellsize) * cellsize + ymargin;
-
-        if (e.isShiftDown()) {
-            frame.board.Undo();
-        } else if (e.isControlDown()) {
-            if (turn == 0) {
-                p1.setPass(true);
-            } else {
-                p2.setPass(true);
-            }
-            if (p1.getPass() == true && p2.getPass () == true)
-                Score();	
-        } else {
-            if (frame.board.Play(x, y, turn)) {
-                turn = (turn == 0) ? 1 : 0;
-            }
+        if (e.getX() < xmin || e.getY() < ymin || e.getX() > xmax || e.getY() > ymax) {
+            return;
         }
         
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                frame.board.repaint();
-            }
-        });
+        int x = ((int)(e.getX() - xmargin)/cellsize) * cellsize + xmargin;
+        int y = ((int)(e.getY()/cellsize)) * cellsize - ymargin;
+        
+        if (panel.board.Play(x, y, turn, false)) {
+            turn = (turn == 0) ? 1 : 0;
+        }
+        panel.repaint();
     }
 	
     @Override
@@ -92,19 +152,19 @@ public class GoGame extends JFrame implements IGoGame {
         gameSetup.show();
         p1 = new Player(gameSetup.getPlayerOne());
         p2 = new Player(gameSetup.getPlayerTwo());
-        frame.board.clear();
-        frame.board = new Board(
+        panel.board.clear();
+        panel.board = new Board(
                Toolkit.getDefaultToolkit().getImage("src\\board.png"), 
                Toolkit.getDefaultToolkit().getImage("src\\white.png"), 
                Toolkit.getDefaultToolkit().getImage("src\\black.png"),
                p1, p2);
-          frame.board.repaint();
+        turn = 0;
     }
 
     @Override
     public void restartGame() {
-        frame.board.clear();
-        frame.board.repaint();
+        turn = 0;
+        panel.board.clear();
     }
 
     @Override
@@ -118,11 +178,13 @@ public class GoGame extends JFrame implements IGoGame {
         ObjectInputStream ois = null;
         try {
             ois = new ObjectInputStream(fis);
-            frame.board = (Board) ois.readObject();
+            panel.board = (Board) ois.readObject();
             ois.close();
         } catch (IOException | ClassNotFoundException ex) {
             System.out.println("ClassNotFoundException");
         }
+        turn = panel.board.getTurn();
+        turn = (turn == 0) ? 1 : 0;
     }
 
     @Override
@@ -135,7 +197,7 @@ public class GoGame extends JFrame implements IGoGame {
         ObjectOutputStream oos = null;
         try {
             oos = new ObjectOutputStream(fos);
-            oos.writeObject(frame.board);
+            oos.writeObject(panel.board);
             fos.close();
         } catch (IOException ex) {
         }
@@ -143,30 +205,19 @@ public class GoGame extends JFrame implements IGoGame {
 
     @Override
     public void exitGame() {
+        hide();
         exit(0);
     }
 
     @Override
     public void Undo() {
-        frame.board.Undo();
+        panel.board.Undo();
         turn = (turn == 0) ? 1 : 0;
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                 frame.board.repaint();
-            }
-        });
     }
 
     @Override
     public void Redo() {
-        frame.board.Redo();
+        panel.board.Redo();
         turn = (turn == 0) ? 1 : 0;
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                 frame.board.repaint();
-            }
-        });
     }
 }

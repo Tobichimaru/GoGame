@@ -86,5 +86,14 @@ public class Stone extends Component implements Serializable {
         xpos = (int) o.readObject();
         ypos = (int) o.readObject();
     }
-
+    
+    public void print() { 
+        System.out.print("Stone: ");
+        System.out.print(xpos);
+        System.out.print(' ');
+        System.out.print(ypos);
+        System.out.print(' ');
+        System.out.println(color);
+    }
+    
 }

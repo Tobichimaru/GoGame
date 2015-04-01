@@ -5,26 +5,25 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Queue;
+import javax.swing.JPanel;
 
 public class Board extends Component implements IBoard, Serializable {
     private Image board_img, white_stone, black_stone;
     private LinkedList<Stone> moves_stack;
-    private ArrayList<Stone> stone_list;
+    private ArrayList<Stone> stone_list, q;
     private int stone_array[][]; 
+    private boolean marks[][];
     private int curr_move;
-    private Player p1, p2;
-    private ArrayList<Stone> q;
-    private boolean marks[][]; 
+    private Player p1, p2;    
     
     private static final long serialVersionUID = -2518143671167959230L;
 	
     Board() {
-        initilize();
+        initialize();
     }
 
     Board(Image img, Image w, Image b, Player p1, Player p2) {
-        initilize();
+        initialize();
         board_img = img;
         white_stone = w;
         black_stone = b;
@@ -38,27 +37,35 @@ public class Board extends Component implements IBoard, Serializable {
         black_stone = b;
     }
     
-    private void initilize() {
+    private void initialize() {
         stone_list = new ArrayList<>();
         moves_stack = new LinkedList<>();
         q = new ArrayList<>();
         stone_array = new int[20][20];
         marks = new boolean[20][20];
-        initlizeArray();
+        initializeArray();
+        initializeMarks();
         curr_move = 0;
     }
     
-    private void initlizeArray() {
+    private void initializeArray() {
         for (int i = 0; i < 19; i++) {
             for (int j = 0; j < 19; j++) {
                 stone_array[i][j] = -1;
-                marks[i][j] = false;
+            }
+        }
+    }
+    
+    private void initializeMarks() {
+        for (int i = 0; i < 19; i++) {
+            for (int j = 0; j < 19; j++) {
+                 marks[i][j] = false;
             }
         }
     }
 
-    protected void paintComponent(Graphics g, Frame a) {
-        g.drawImage(board_img, 0, 45, a);
+    protected void paintComponent(Graphics g, JPanel a) {
+        g.drawImage(board_img, 0, 0, a);
         for (Stone s : stone_list) {
             if (s.getColor() == 0) {
                 g.drawImage(black_stone, s.getX(), s.getY(), a);
@@ -68,53 +75,116 @@ public class Board extends Component implements IBoard, Serializable {
         }
     }
 
-    public boolean Play(int x, int y, int color) {        
-        if (x < xmin || y < ymin || x > xmax || y > ymax 
-                || stone_array[x/cellsize - 1][y/cellsize - 2] != -1) {
+    /*
+    * Play() method returns true if the stone was sucessfully placed on board, 
+    * else returns false;
+    */
+    public boolean Play(int x, int y, int color, boolean rewrite) {    
+        int xpos = x/cellsize - 1;
+        int ypos = y/cellsize - 1;
+        if (stone_array[xpos][ypos] != -1) {
             return false;
         } 
-        System.out.print(x/cellsize - 1);
-        System.out.print(' ');
-        System.out.print(y/cellsize - 2);
-        System.out.print(' ');
-        System.out.println(color)
-;        Stone s = new Stone(x, y, x/cellsize - 1, y/cellsize - 2, color);
+        Stone s = new Stone(x, y, xpos, ypos, color);
         int other_color = (color == 0)? 1: 0;
         int surr_stones = 0;
-        addStone(s);
-        surr_stones += isSurrounded(s.getXPos(), s.getYPos() + 1, other_color);
-        surr_stones += isSurrounded(s.getXPos(), s.getYPos() - 1, other_color);
-        surr_stones += isSurrounded(s.getXPos() + 1, s.getYPos(), other_color);
-        surr_stones += isSurrounded(s.getXPos() - 1, s.getYPos(), other_color);
-        if (surr_stones == 0 && isSurrounded(s.getXPos(), s.getYPos(), s.getColor()) == 1) {
+        if (rewrite) {
+            placeStone(s);
+        } else { 
+            addStone(s);
+        }
+        
+        surr_stones += isSurrounded(xpos, ypos + 1, other_color, true);
+        surr_stones += isSurrounded(xpos, ypos - 1, other_color, true);
+        surr_stones += isSurrounded(xpos + 1, ypos, other_color, true);
+        surr_stones += isSurrounded(xpos - 1, ypos, other_color, true);
+        if (surr_stones == 0 && isSurrounded(xpos, ypos, s.getColor(), false) == 1) {
             removeStone(s);
             return false;
         }
         return true;
     }
     
-    private int isSurrounded(int x, int y, int color) {
-        System.out.print("isSurrounded: ");
-        System.out.print(x);
-        System.out.print(' ');
-        System.out.print(y);
-        System.out.print(' ');
-        System.out.println(color);
+    /*
+    * isSurrounded() method returns 1 if the stone grop is surrounded, 
+    * else returns 0;
+    */
+    private int isSurrounded(int x, int y, int color, boolean delete) {
         Stone curr = new Stone();
         if (x < 0 || y < 0 || x > 18 || y > 18) {
             return 0;
         } 
         if (stone_array[x][y] == -1) { 
-              System.out.println("empty place");
             return 0;
         }
         Stone s = find(x, y);
         if (s.getColor() != color) {
-              System.out.println("the same color");
             return 0;
         }
-        if (!findGroup(s)) {
+        if (!findGroup(s, delete)) {
             return 0;
+        }
+        return 1;
+    }
+    
+    
+    /*
+    * findGroup(Stone s) finds a connected group of given stone. If this group
+    * is surrounded, this method remove the gruop of stones from the board and
+    * returns true. In other case this group is remain on boerd and method 
+    * retuns false;
+    */
+    private boolean findGroup(Stone s, boolean delete) {
+        initializeMarks();
+        q.clear();
+        marks[s.getXPos()][s.getYPos()] = true;
+        q.add(s);
+        marks[s.getXPos()][s.getYPos()] = true;
+        Stone curr = q.get(0);
+        int x, y;
+        int last = 1;
+        while (last <= q.size()) {
+            x = curr.getXPos();
+            y = curr.getYPos();
+            int sum = checkNeighborStone(x+1, y, curr.getColor()) +
+                checkNeighborStone(x-1, y, curr.getColor()) +
+                checkNeighborStone(x, y+1, curr.getColor()) +
+                checkNeighborStone(x, y-1, curr.getColor());
+            if (sum < 4) {
+                return false;
+            }
+            if (last < q.size()) {
+                curr = q.get(last);
+            }
+            last++;
+        } 
+        if (delete) {
+            for (Stone st : q) {
+                this.removeStone(st);
+            }
+        }
+        return true;
+    } 
+    
+    /*
+    * This method checks the stone on existance. If the stone satisfy 
+    * requerements, than it will be added in the queue. If checked place is
+    * empty - return 0, else return 1.
+    */
+    private int checkNeighborStone(int x, int y, int color) {
+        if (x < 0 || y < 0 || x > 18 || y > 18) {
+            return 1;
+        } 
+        Stone other = new Stone();
+        if (stone_array[x][y] == -1) {
+            return 0;
+        }
+        if (marks[x][y] == false) {
+            other = find(x, y);
+            if (other.getColor() == color) {
+                q.add(other);
+                marks[x][y] = true;
+            }
         }
         return 1;
     }
@@ -127,81 +197,6 @@ public class Board extends Component implements IBoard, Serializable {
         return new Stone();
     }
     
-    //false - has empty neighbor
-    private boolean findGroup(Stone s) {
-        q.clear();
-        for (int i = 0; i < 19; i++) {
-            for (int j = 0; j < 19; j++) {
-                marks[i][j] = false;
-            }
-        }
-        q.add(s);
-        marks[s.getXPos()][s.getYPos()] = true;
-        System.out.print("find Group: ");
-        System.out.print(s.getXPos());
-        System.out.print(' ');
-        System.out.print(s.getYPos());
-        System.out.print(' ');
-        System.out.println(s.getColor());
-        
-        Stone curr = q.get(0);
-        
-        int x, y;
-        int last = 1;
-        while (last <= q.size()) {
-            x = curr.getXPos();
-            y = curr.getYPos();
-            int sum = checkStone(x+1, y, curr.getColor()) +
-                checkStone(x-1, y, curr.getColor()) +
-                checkStone(x, y+1, curr.getColor()) +
-                checkStone(x, y-1, curr.getColor());
-            if (sum < 4) {
-                return false;
-            }
-            if (last < q.size()) {
-                curr = q.get(last);
-            }
-            last++;
-        } 
-        System.out.println("findGroup true : ");
-        for (Stone st : q) {
-             System.out.print("delete queue : ");
-            System.out.print(st.getXPos());
-            System.out.print(' ');
-            System.out.print(st.getYPos());
-            System.out.print(' ');
-            System.out.println(st.getColor());
-            this.removeStone(st);
-        }
-        return true;
-    } 
-    
-     //false - has empty neighbor
-    private int checkStone(int x, int y, int color) {
-        if (x < 0 || y < 0 || x > 18 || y > 18) {
-            return 1;
-        } 
-         System.out.print("checkStone: ");
-        System.out.print(x);
-        System.out.print(' ');
-        System.out.print(y);
-        System.out.print(' ');
-        System.out.println(color);
-        Stone other = new Stone();
-        if (stone_array[x][y] == -1) {
-            return 0;
-        }
-        if (marks[x][y] == false) {
-            other = find(x, y);
-            if (other.getColor() == color) {
-                  System.out.println("add in quque");
-                q.add(other);
-                marks[x][y] = true;
-            }
-        }
-        return 1;
-    }
-    
     private void addStone(Stone s) {
         stone_list.add(s);
         moves_stack.add(s);
@@ -209,15 +204,20 @@ public class Board extends Component implements IBoard, Serializable {
         curr_move++;
     }
     
+    private void placeStone(Stone s) {
+        stone_list.add(s);
+        stone_array[s.getXPos()][s.getYPos()] = 1;
+    }
+    
     private void rewriteArray() {
         stone_list.clear();
-        initlizeArray();
+        initializeArray();
+        
         Stone s = new Stone();
+        System.out.println(moves_stack.size());
         for (int i = 0; i < curr_move; i++) {
             s = moves_stack.get(i);
-             //Play()
-            stone_list.add(s);
-            stone_array[s.getXPos()][s.getYPos()] = 1;
+            Play(s.getX(), s.getY(), s.getColor(), true);
         }
     }
     
@@ -248,11 +248,11 @@ public class Board extends Component implements IBoard, Serializable {
         }
         return false;
     }
-
+    
     public void clear() {
         moves_stack.clear();
         stone_list.clear();
-        this.initlizeArray();
+        initializeArray();
     }
     
     private void writeObject(ObjectOutputStream o) throws IOException {  
@@ -265,20 +265,16 @@ public class Board extends Component implements IBoard, Serializable {
     }
   
     private void readObject(ObjectInputStream o) throws IOException, ClassNotFoundException {  
-        System.out.print("readObject");
+        initialize();
         p1 = (Player) o.readObject();  
         p2 = (Player) o.readObject();
         curr_move = (int) o.readObject();
         moves_stack = (LinkedList<Stone>) o.readObject();
         stone_list = (ArrayList<Stone>) o.readObject();
         stone_array = (int[][]) o.readObject();
-        q = new ArrayList<>();
-        marks = new boolean[20][20];
-         for (int i = 0; i < 19; i++) {
-            for (int j = 0; j < 19; j++) {
-                marks[i][j] = false;
-            }
-        }
-        System.out.println(moves_stack.size());
+    }
+    
+    public int getTurn() {
+        return moves_stack.get(curr_move - 1).getColor();
     }
 }
