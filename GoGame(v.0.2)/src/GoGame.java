@@ -8,8 +8,8 @@ import static java.lang.System.exit;
 public class GoGame extends JFrame implements IGoGame, MouseListener {
     private MenuBar menubar;
     private MenuItem newGameItem, restartGameItem, loadGameItem, saveGameItem, exitGameItem;
-    private MenuItem undoItem, redoItem, passItem;
-    private Menu m1, m2;
+    private MenuItem undoItem, redoItem, passItem, howtoItem;
+    private Menu m1, m2, m3;
     private Player p1, p2;
     private Image w, b, img;
     private int turn;
@@ -64,6 +64,11 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         m2.add(redoItem);
         m2.add(passItem);
         menubar.add(m2);
+        
+        howtoItem = new MenuItem("How to play?");
+        m3 = new Menu("Help");
+        m3.add(howtoItem);
+        menubar.add(m3);
 
         setMenuBar(menubar);
     }
@@ -97,6 +102,9 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
             }
             if (p1.getPass() == true && p2.getPass () == true)
                 Score();	
+        } else if (e.target == howtoItem) {
+            HelpWindow helpWindow = new HelpWindow();
+            helpWindow.show();
         }
         panel.repaint();
         return true;
