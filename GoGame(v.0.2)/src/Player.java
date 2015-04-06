@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class Player implements Serializable {
     private String name;
-    private int score;
+    private double score;
     boolean pass;
     
     private static final long serialVersionUID = -2518143646456679590L;
@@ -23,15 +23,15 @@ public class Player implements Serializable {
         return name;
     }
     
-    public void increaseScore(int n) {
+    public void increaseScore(double n) {
         score += n;
     }
 
-    public void setScore(int sc) {
+    public void setScore(double sc) {
         score = sc;
     }
 
-    public int getScore() {
+    public double getScore() {
         return score;
     }
 
@@ -51,7 +51,7 @@ public class Player implements Serializable {
   
     private void readObject(ObjectInputStream o) throws IOException, ClassNotFoundException {  
         name = (String) o.readObject();
-        score = (int) o.readObject();
+        score = (double) o.readObject();
         pass = (boolean) o.readObject();
     }
     

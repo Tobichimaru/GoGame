@@ -5,16 +5,19 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Queue;
 import javax.swing.JPanel;
 
 public class Board extends Component implements IBoard, Serializable {
     private Image board_img, white_stone, black_stone;
     private LinkedList<Stone> moves_stack;
     private ArrayList<Stone> stone_list, q;
+    private Queue<Stone> terr_q;
     private int stone_array[][]; 
     private boolean marks[][];
     private int curr_move;
-    private Player p1, p2;    
+    public Player p1, p2;    
+    int black, white;
     
     private static final long serialVersionUID = -2518143671167959230L;
 	
@@ -41,6 +44,7 @@ public class Board extends Component implements IBoard, Serializable {
         stone_list = new ArrayList<>();
         moves_stack = new LinkedList<>();
         q = new ArrayList<>();
+        terr_q = new LinkedList<>();
         stone_array = new int[20][20];
         marks = new boolean[20][20];
         initializeArray();
@@ -80,6 +84,9 @@ public class Board extends Component implements IBoard, Serializable {
     * else returns false;
     */
     public boolean Play(int x, int y, int color, boolean rewrite) {    
+        p1.setPass(false);
+        p2.setPass(false);
+        
         int xpos = x/cellsize - 1;
         int ypos = y/cellsize - 1;
         if (stone_array[xpos][ypos] != -1) {
@@ -137,7 +144,6 @@ public class Board extends Component implements IBoard, Serializable {
     private boolean findGroup(Stone s, boolean delete) {
         initializeMarks();
         q.clear();
-        marks[s.getXPos()][s.getYPos()] = true;
         q.add(s);
         marks[s.getXPos()][s.getYPos()] = true;
         Stone curr = q.get(0);
@@ -158,7 +164,12 @@ public class Board extends Component implements IBoard, Serializable {
             }
             last++;
         } 
-        if (delete) {
+        if (delete && !q.isEmpty()) {
+            if (q.get(0).getColor() == 0) {
+                p1.increaseScore(-q.size());
+            } else {
+                p2.increaseScore(-q.size());
+            }
             for (Stone st : q) {
                 this.removeStone(st);
             }
@@ -214,7 +225,6 @@ public class Board extends Component implements IBoard, Serializable {
         initializeArray();
         
         Stone s = new Stone();
-        System.out.println(moves_stack.size());
         for (int i = 0; i < curr_move; i++) {
             s = moves_stack.get(i);
             Play(s.getX(), s.getY(), s.getColor(), true);
@@ -277,4 +287,69 @@ public class Board extends Component implements IBoard, Serializable {
     public int getTurn() {
         return moves_stack.get(curr_move - 1).getColor();
     }
+    
+    public void calculateScore() {
+        initializeMarks();
+        for (int i = 0; i < 19; i++) {
+            for (int j = 0; j < 19; j++) {
+                if (stone_array[i][j] == -1 && !marks[i][j]) {
+                    findTerritory(i, j);
+                }
+            }
+        }
+        p2.increaseScore(5.5);
+    }
+   
+    private boolean findTerritory(int x, int y) {
+        Stone s = new Stone(x, y, x, y, -1);
+        terr_q.clear();
+        terr_q.add(s);
+        marks[s.getXPos()][s.getYPos()] = true;
+        Stone curr = new Stone();
+        white = 0;
+        black = 0;
+        int count = 0;
+        int xx, yy;
+        while (!terr_q.isEmpty()) {
+            curr = terr_q.poll();
+            xx = curr.getXPos();
+            yy = curr.getYPos();
+            checkNeighborTerritory(xx+1, yy);
+            checkNeighborTerritory(xx-1, yy);
+            checkNeighborTerritory(xx, yy+1);
+            checkNeighborTerritory(xx, yy-1);
+            count++;
+        } 
+        
+        if (white == 0 && black > 0) {
+            p1.increaseScore(count);
+        } else if (white != 0 && black == 0) {
+            p2.increaseScore(count);
+        }
+        
+        return true;
+    } 
+    
+    private int checkNeighborTerritory(int x, int y) {
+        if (x < 0 || y < 0 || x > 18 || y > 18) {
+            return 1;
+        } 
+        Stone other = new Stone();
+        if (marks[x][y] == false && stone_array[x][y] == -1) {
+            other = new Stone(x, y, x, y, -1);
+            terr_q.add(other);
+            marks[x][y] = true;
+        } else if (stone_array[x][y] != -1) {
+            other = find(x, y);
+            if (other.getColor() == 0) {
+                black++;
+            } else {
+                white++;
+            }
+        }
+        return 1;
+    }
+    
+    
+    
 }

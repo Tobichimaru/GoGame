@@ -10,7 +10,6 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     private MenuItem newGameItem, restartGameItem, loadGameItem, saveGameItem, exitGameItem;
     private MenuItem undoItem, redoItem, passItem, howtoItem;
     private Menu m1, m2, m3;
-    private Player p1, p2;
     private Image w, b, img;
     private int turn;
     private DrawPanel panel;
@@ -20,15 +19,15 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     public GoGame() {
         LocalPlayersNameWindow gameSetup = new LocalPlayersNameWindow();
         gameSetup.show();
-        p1 = new Player(gameSetup.getPlayerOne());
-        p2 = new Player(gameSetup.getPlayerTwo());
         img = Toolkit.getDefaultToolkit().getImage("src\\board.png");
         w = Toolkit.getDefaultToolkit().getImage("src\\white.png"); 
         b = Toolkit.getDefaultToolkit().getImage("src\\black.png");
         syncMenu();
         addMouseListener(this);
         turn = 0;
-        panel = new DrawPanel(new Board(img, w, b, p1, p2));
+        panel = new DrawPanel(new Board(img, w, b, 
+                new Player(gameSetup.getPlayerOne()), 
+                new Player(gameSetup.getPlayerTwo())));
         resize(605, 645);
         setResizable(false);
         setTitle("Go Game");
@@ -79,32 +78,39 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
             return false;
         }
         String s = (String)o;
-        if (e.target == newGameItem) {
-            newGame();
-        } else if (e.target == restartGameItem) {
-            restartGame();
-        } else if (e.target == loadGameItem) {
-            loadGame();
-            panel.board.setImages(img, w, b);
+        if (e.target == passItem) {
+            if (turn == 0) {
+                panel.board.p1.setPass(true);
+            } else {
+                panel.board.p2.setPass(true);
+            }
+            if (panel.board.p1.getPass() && panel.board.p2.getPass()) {
+                Score();	
+            }
+            turn = (turn == 0) ? 1 : 0;
         } else if (e.target == saveGameItem) {
             saveGame();
-        } else if (e.target == exitGameItem) {
-            exitGame();
-        } else if (e.target == undoItem) {
-            Undo();
-        } else if (e.target == redoItem) {
-            Redo();
-        } else if (e.target == passItem) {
-            if (turn == 0) {
-                p1.setPass(true);
-            } else {
-                p2.setPass(true);
+        } else {
+            panel.board.p1.setPass(false);
+            panel.board.p2.setPass(false);
+            
+            if (e.target == newGameItem) {
+                newGame();
+            } else if (e.target == restartGameItem) {
+                restartGame();
+            } else if (e.target == loadGameItem) {
+                loadGame();
+                panel.board.setImages(img, w, b);
+            }  else if (e.target == exitGameItem) {
+                exitGame();
+            } else if (e.target == undoItem) {
+                Undo();
+            } else if (e.target == redoItem) {
+                Redo();
+            } else if (e.target == howtoItem) {
+                HelpWindow helpWindow = new HelpWindow();
+                helpWindow.show();
             }
-            if (p1.getPass() == true && p2.getPass () == true)
-                Score();	
-        } else if (e.target == howtoItem) {
-            HelpWindow helpWindow = new HelpWindow();
-            helpWindow.show();
         }
         panel.repaint();
         return true;
@@ -143,29 +149,33 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
 	
     @Override
     public void Score() {
-        if (p1.getScore() > p2.getScore()) {
-            new WinnerDialog(p1.getName(), p1.getScore(), p2.getScore()).show();
-        } else if (p1.getScore() < p2.getScore()) {
-            new WinnerDialog(p2.getName(), p1.getScore(), p2.getScore()).show();
-        } else {
-            new WinnerDialog("No One", p1.getScore(), p2.getScore()).show();
+        panel.board.calculateScore();
+        double p1_score = panel.board.p1.getScore();
+        double p2_score = panel.board.p2.getScore();
+        if (p1_score < 0) {
+            p2_score -= p1_score;
+            p1_score = 0;
+        } else if (p2_score < 0) {
+            p1_score -= p2_score;
+            p2_score = 0;
         }
-        System.out.println ("Player 1 Score: " + p1.getScore ());
-        System.out.println ("Player 2 Score: " + p2.getScore ());
+        if (p1_score > p2_score) {
+            new WinnerDialog(panel.board.p1.getName(), p1_score, p2_score).show();
+        } else {
+            new WinnerDialog(panel.board.p2.getName(), p1_score, p2_score).show();
+        }
     }
-	
+    
     @Override
     public void newGame() {
         LocalPlayersNameWindow gameSetup = new LocalPlayersNameWindow();
         gameSetup.show();
-        p1 = new Player(gameSetup.getPlayerOne());
-        p2 = new Player(gameSetup.getPlayerTwo());
         panel.board.clear();
         panel.board = new Board(
                Toolkit.getDefaultToolkit().getImage("src\\board.png"), 
                Toolkit.getDefaultToolkit().getImage("src\\white.png"), 
                Toolkit.getDefaultToolkit().getImage("src\\black.png"),
-               p1, p2);
+               new Player(gameSetup.getPlayerOne()), new Player(gameSetup.getPlayerTwo()));
         turn = 0;
     }
 

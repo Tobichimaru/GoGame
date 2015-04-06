@@ -4,7 +4,7 @@ public class WinnerDialog extends Dialog {
     Label textWinner, textScore;
     Button b = new Button("OK");
 
-    public WinnerDialog(String playerName, int score1, int score2) {
+    public WinnerDialog(String playerName, double score1, double score2) {
         super(new Frame("Winner!"), "Winner!", true);
 
         textWinner = new Label(playerName + " won!");
