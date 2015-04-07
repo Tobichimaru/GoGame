@@ -44,3 +44,5 @@ Temporary Items
 /GoGame(v.0.1)/dist/
 /Server(v.0.1)/build/
 /Server(v.0.1)/dist/
+/TestClient/nbproject/private/
+/TestClient/build/

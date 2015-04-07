@@ -224,7 +224,8 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     @Override
     public void exitGame() {
         hide();
-        exit(0);
+        dispose();
+        new MainMenu();
     }
 
     @Override
