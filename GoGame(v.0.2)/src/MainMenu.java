@@ -27,7 +27,7 @@ class MainMenu extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 hide();
                 dispose();
-                new GoGame();
+                new GoGame(false);
             }
         });
         panel.add(local_game); 

@@ -4,6 +4,7 @@ import java.io.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import static java.lang.System.exit;
+import java.net.Socket;
 
 public class GoGame extends JFrame implements IGoGame, MouseListener {
     private MenuBar menubar;
@@ -15,19 +16,29 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     private DrawPanel panel;
     
     private static final long serialVersionUID = -250003671167959230L;
+    private BufferedReader in;
+    private PrintWriter out;
+    private Socket socket;
     
-    public GoGame() {
-        LocalPlayersNameWindow gameSetup = new LocalPlayersNameWindow();
-        gameSetup.show();
+    public GoGame(boolean server) {
         img = Toolkit.getDefaultToolkit().getImage("src\\board.png");
         w = Toolkit.getDefaultToolkit().getImage("src\\white.png"); 
         b = Toolkit.getDefaultToolkit().getImage("src\\black.png");
+        if (!server) {
+            LocalPlayersNameWindow gameSetup = new LocalPlayersNameWindow();
+            gameSetup.show();
+            panel = new DrawPanel(new Board(img, w, b, 
+                new Player(gameSetup.getPlayerOne()), 
+                new Player(gameSetup.getPlayerTwo())));
+        } else { 
+            panel = new DrawPanel(new Board(img, w, b, 
+                new Player(), new Player() ) );
+        }
+       
         syncMenu();
         addMouseListener(this);
         turn = 0;
-        panel = new DrawPanel(new Board(img, w, b, 
-                new Player(gameSetup.getPlayerOne()), 
-                new Player(gameSetup.getPlayerTwo())));
+       
         resize(605, 645);
         setResizable(false);
         setTitle("Go Game");
@@ -238,5 +249,16 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     public void Redo() {
         panel.board.Redo();
         turn = (turn == 0) ? 1 : 0;
+    }
+
+    void setSocket(Socket socket, BufferedReader in, PrintWriter out) {
+        this.socket = socket;
+        this.in = in;
+        this.out = out;
+    }
+    
+    void setPlayers(String name1, String name2) {
+        panel.board.p1.setName(name1);
+        panel.board.p2.setName(name2);
     }
 }

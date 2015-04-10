@@ -15,6 +15,12 @@ public class Player implements Serializable {
         name = n;
     }
 
+    Player() {
+        name = "";
+        score = 0;
+        pass = false;
+    }
+
     public void setName(String n) {
         name = n;
     }

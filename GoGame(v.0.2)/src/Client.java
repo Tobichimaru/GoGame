@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 
@@ -15,6 +16,7 @@ public class Client {
 	private BufferedReader in;
 	private PrintWriter out;
 	private Socket socket;
+        private String name;
 
 	/**
 	 * Запрашивает у пользователя ник и организовывает обмен сообщениями с
@@ -22,30 +24,46 @@ public class Client {
 	 */
 	public Client() {
 		Scanner scan = new Scanner(System.in);
-
-		
-
 		try {
 			// Подключаемся в серверу и получаем потоки(in и out) для передачи сообщений
 			socket = new Socket("localhost", 9991);
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
+                        
 
-			System.out.println("Введите свой ник:");
-			out.println(scan.nextLine());
-
-			// Запускаем вывод всех входящих сообщений в консоль
-			Resender resend = new Resender();
-			resend.start();
-
-			// Пока пользователь не введёт "exit" отправляем на сервер всё, что
-			// введено из консоли
-			String str = "";
-			while (!str.equals("exit")) {
-				str = scan.nextLine();
-				out.println(str);
-			}
-			resend.setStop();
+                        ServerPlayerNameWindow window = new ServerPlayerNameWindow();
+                        String id = in.readLine();
+                        window.setName(id);
+                        window.show();
+                        name = window.getName();
+			out.println(name);
+                        
+                        out.println("list");
+                        
+                        
+                        int n = Integer.valueOf(in.readLine());
+                        System.out.println(n);
+                        String str = new String();
+                        LinkedList<String> names = new LinkedList<>();
+                        
+                        System.out.println("Type name:");
+                        for (int i = 0; i < n; i++) {
+                            str = in.readLine();
+                            names.add(str);
+                            System.out.println(str);
+                        }
+                        str = scan.nextLine();
+                        for (String s : names) {
+                            if (str.equals(s)) {
+                                GoGame game = new GoGame(true);
+                                game.setSocket(socket, in, out);
+                                game.setPlayers(name, s);
+                                while (true) {
+                                    
+                                }
+                            }
+                        }
+                        
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
