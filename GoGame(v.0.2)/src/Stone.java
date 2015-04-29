@@ -95,5 +95,16 @@ public class Stone extends Component implements Serializable {
         System.out.print(' ');
         System.out.println(color);
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 71 * hash + this.color;
+        hash = 71 * hash + this.x;
+        hash = 71 * hash + this.y;
+        hash = 71 * hash + this.xpos;
+        hash = 71 * hash + this.ypos;
+        return hash;
+    }
     
 }

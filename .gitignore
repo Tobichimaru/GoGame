@@ -46,3 +46,12 @@ Temporary Items
 /Server(v.0.1)/dist/
 /TestClient/nbproject/private/
 /TestClient/build/
+*.class
+*.txt
+*.properties
+*.xml
+*.jar
+*.mf
+*.netbeans_update_resources
+*.netbeans_automatic_build
+GoGame(v.0.1)/build/classes/README

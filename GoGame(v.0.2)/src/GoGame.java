@@ -3,7 +3,6 @@ import java.awt.*;
 import java.io.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import static java.lang.System.exit;
 import java.net.Socket;
 
 public class GoGame extends JFrame implements IGoGame, MouseListener {
@@ -11,6 +10,7 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     private MenuItem newGameItem, restartGameItem, loadGameItem, saveGameItem, exitGameItem;
     private MenuItem undoItem, redoItem, passItem, howtoItem;
     private Menu m1, m2, m3;
+    
     private Image w, b, img;
     private int turn;
     private DrawPanel panel;

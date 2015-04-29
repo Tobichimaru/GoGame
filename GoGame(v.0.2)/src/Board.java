@@ -5,6 +5,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Queue;
 import javax.swing.JPanel;
 
@@ -18,6 +19,7 @@ public class Board extends Component implements IBoard, Serializable {
     private int curr_move;
     public Player p1, p2;    
     int black, white;
+    private ArrayList<Integer> hashes;
     
     private static final long serialVersionUID = -2518143671167959230L;
 	
@@ -46,6 +48,7 @@ public class Board extends Component implements IBoard, Serializable {
         q = new ArrayList<>();
         terr_q = new LinkedList<>();
         stone_array = new int[20][20];
+        hashes = new ArrayList<>();
         marks = new boolean[20][20];
         initializeArray();
         initializeMarks();
@@ -109,6 +112,16 @@ public class Board extends Component implements IBoard, Serializable {
             removeStone(s);
             return false;
         }
+        
+        Integer h = hashCode();
+        for (Integer hash : hashes) {
+            if (hash.equals(h)) {
+                removeStone(s);
+                Undo();
+                return false;
+            }
+        }
+        hashes.add(h);
         return true;
     }
     
@@ -210,6 +223,9 @@ public class Board extends Component implements IBoard, Serializable {
     
     private void addStone(Stone s) {
         stone_list.add(s);
+        while (curr_move < moves_stack.size()) {
+            moves_stack.removeLast();
+        }
         moves_stack.add(s);
         stone_array[s.getXPos()][s.getYPos()] = 1;
         curr_move++;
@@ -222,6 +238,7 @@ public class Board extends Component implements IBoard, Serializable {
     
     private void rewriteArray() {
         stone_list.clear();
+        hashes.clear();
         initializeArray();
         
         Stone s = new Stone();
@@ -272,6 +289,7 @@ public class Board extends Component implements IBoard, Serializable {
         o.writeObject(moves_stack);
         o.writeObject(stone_list);
         o.writeObject(stone_array);
+        o.writeObject(hashes);
     }
   
     private void readObject(ObjectInputStream o) throws IOException, ClassNotFoundException {  
@@ -282,6 +300,7 @@ public class Board extends Component implements IBoard, Serializable {
         moves_stack = (LinkedList<Stone>) o.readObject();
         stone_list = (ArrayList<Stone>) o.readObject();
         stone_array = (int[][]) o.readObject();
+        hashes = (ArrayList<Integer>) o.readObject();
     }
     
     public int getTurn() {
@@ -349,7 +368,12 @@ public class Board extends Component implements IBoard, Serializable {
         }
         return 1;
     }
-    
-    
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + Objects.hashCode(this.stone_list);
+        return hash;
+    }
     
 }
