@@ -37,6 +37,7 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
        
         add(panel);
+        setLocationRelativeTo(null);
         setVisible(true);
     }
     

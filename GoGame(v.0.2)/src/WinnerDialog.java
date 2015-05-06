@@ -16,6 +16,19 @@ public class WinnerDialog extends Dialog {
         add(b);
         pack();
     }   
+    
+    public WinnerDialog(String playerName) {
+        super(new Frame("Winner!"), "Winner!", true);
+
+        textWinner = new Label(playerName + " won!");
+        textScore = new Label("Won by resign!");
+
+        setLayout(new FlowLayout());
+        add(textWinner);
+        add(textScore);
+        add(b);
+        pack();
+    }   
 	
     public boolean action(Event e, Object o) {
         if (e.target instanceof Button) {

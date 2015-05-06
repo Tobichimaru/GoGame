@@ -13,12 +13,8 @@ class MainMenu extends JFrame {
     private JPanel panel;
 
     public MainMenu() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-        setSize(400, 400); 
-        setVisible(true); 
- 
         panel = new JPanel();
-        panel.setLayout(new GridLayout(3,3)); 
+        panel.setLayout(new GridLayout(2,2)); 
  
         // к панели добавляем кнопку и устанавливаем для нее менеджер в верхнее расположение. 
         JButton local_game = new JButton("Local game");
@@ -43,16 +39,13 @@ class MainMenu extends JFrame {
         });
         panel.add(server_game); 
 
-        JButton howto = new JButton("How to play?");
-        howto.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new HelpWindow();
-            }
-        });
-        panel.add(howto); 
-        
         add(panel);
+        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+        setSize(200, 200); 
+        setResizable(false);
+        setVisible(true); 
+        setLocationRelativeTo(null);
     }
     
 }
