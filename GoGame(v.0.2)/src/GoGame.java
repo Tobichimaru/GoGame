@@ -8,7 +8,7 @@ import java.net.Socket;
 public class GoGame extends JFrame implements IGoGame, MouseListener {
     private MenuBar menubar;
     private MenuItem newGameItem, restartGameItem, loadGameItem, saveGameItem, exitGameItem;
-    private MenuItem undoItem, redoItem, passItem, howtoItem;
+    private MenuItem undoItem, redoItem, passItem, howtoItem, resignItem;
     private Menu m1, m2, m3;
     
     private Image w, b, img;
@@ -24,16 +24,8 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         img = Toolkit.getDefaultToolkit().getImage("src\\board.png");
         w = Toolkit.getDefaultToolkit().getImage("src\\white.png"); 
         b = Toolkit.getDefaultToolkit().getImage("src\\black.png");
-        if (!server) {
-            LocalPlayersNameWindow gameSetup = new LocalPlayersNameWindow();
-            gameSetup.show();
-            panel = new DrawPanel(new Board(img, w, b, 
-                new Player(gameSetup.getPlayerOne()), 
-                new Player(gameSetup.getPlayerTwo())));
-        } else { 
-            panel = new DrawPanel(new Board(img, w, b, 
-                new Player(), new Player() ) );
-        }
+        panel = new DrawPanel(new Board(img, w, b, new Player("Black"),
+                new Player("White")));
        
         syncMenu();
         addMouseListener(this);
@@ -68,11 +60,13 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         undoItem = new MenuItem("Undo");
         redoItem = new MenuItem("Redo");
         passItem = new MenuItem("Pass");
+        resignItem  = new MenuItem("Resign");
         
         m2 = new Menu("Edit");
         m2.add(undoItem);
         m2.add(redoItem);
         m2.add(passItem);
+        m2.add(resignItem);
         menubar.add(m2);
         
         howtoItem = new MenuItem("How to play?");
@@ -121,6 +115,8 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
             } else if (e.target == howtoItem) {
                 HelpWindow helpWindow = new HelpWindow();
                 helpWindow.show();
+            } else if (e.target == resignItem) {
+                new WinnerDialog(panel.board.p2.getName()).show();
             }
         }
         panel.repaint();
@@ -179,14 +175,12 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     
     @Override
     public void newGame() {
-        LocalPlayersNameWindow gameSetup = new LocalPlayersNameWindow();
-        gameSetup.show();
         panel.board.clear();
         panel.board = new Board(
                Toolkit.getDefaultToolkit().getImage("src\\board.png"), 
                Toolkit.getDefaultToolkit().getImage("src\\white.png"), 
                Toolkit.getDefaultToolkit().getImage("src\\black.png"),
-               new Player(gameSetup.getPlayerOne()), new Player(gameSetup.getPlayerTwo()));
+               new Player("Black"), new Player("White"));
         turn = 0;
     }
 

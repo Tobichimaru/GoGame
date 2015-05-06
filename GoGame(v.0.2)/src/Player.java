@@ -13,6 +13,8 @@ public class Player implements Serializable {
 
     Player(String n) {
         name = n;
+        score = 0;
+        pass = false;
     }
 
     Player() {
