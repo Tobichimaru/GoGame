@@ -113,15 +113,25 @@ public class Server {
                     str = in.readLine();
                     if (str.equals("exit")) {
                         break;
-                    }
-
-                    if (str.equals("list")) {
+                    } else if (str.equals("list")) {
                         Iterator<Connection> iter = connections.iterator();
                         out.println(Integer.toString(connections.size()));
                         while(iter.hasNext()) {
                             out.println(iter.next().name);
                         }
-                    }  else {
+                    } else if (str.equals("connect")) {
+                        Iterator<Connection> iter = connections.iterator();
+                        out.println(Integer.toString(connections.size()));
+                        while(iter.hasNext()) {
+                            out.println(iter.next().name);
+                        }
+                    } else if (str.equals("request")) {
+                        Iterator<Connection> iter = connections.iterator();
+                        out.println(Integer.toString(connections.size()));
+                        while(iter.hasNext()) {
+                            out.println(iter.next().name);
+                        }
+                    } else {
                         synchronized(connections) {
                             Iterator<Connection> iter = connections.iterator();
                             while(iter.hasNext()) {

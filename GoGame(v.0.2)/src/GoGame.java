@@ -22,6 +22,8 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     private PrintWriter out;
     private Socket socket;
     
+    private JLabel label;
+    
     public GoGame(boolean server) {
         img = Toolkit.getDefaultToolkit().getImage("src\\board.png");
         w = Toolkit.getDefaultToolkit().getImage("src\\white.png"); 
@@ -33,12 +35,16 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         addMouseListener(this);
         turn = 0;
        
-        resize(605, 645);
+        resize(605, 655);
         setResizable(false);
         setTitle("Go Game");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
        
-        add(panel);
+        label = new JLabel("Black turn!");
+        
+        setLayout(new BorderLayout());
+        add(panel, BorderLayout.CENTER);
+        add(label, BorderLayout.SOUTH); 
         setLocationRelativeTo(null);
         setVisible(true);
     }
@@ -95,7 +101,7 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
             if (panel.board.p1.getPass() && panel.board.p2.getPass()) {
                 Score();	
             }
-            turn = (turn == 0) ? 1 : 0;
+            changeTurn();
         } else if (e.target == saveGameItem) {
             saveGame();
         } else {
@@ -158,7 +164,7 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         int y = ((int)(e.getY()/cellsize)) * cellsize - ymargin;
         
         if (panel.board.Play(x, y, turn, false)) {
-            turn = (turn == 0) ? 1 : 0;
+            changeTurn();
         }
         panel.repaint();
     }
@@ -216,7 +222,7 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
             System.out.println("ClassNotFoundException");
         }
         turn = panel.board.getTurn();
-        turn = (turn == 0) ? 1 : 0;
+        changeTurn();
     }
 
     @Override
@@ -245,13 +251,13 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     @Override
     public void Undo() {
         panel.board.Undo();
-        turn = (turn == 0) ? 1 : 0;
+        changeTurn();
     }
 
     @Override
     public void Redo() {
         panel.board.Redo();
-        turn = (turn == 0) ? 1 : 0;
+        changeTurn();
     }
 
     void setSocket(Socket socket, BufferedReader in, PrintWriter out) {
@@ -263,5 +269,15 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     void setPlayers(String name1, String name2) {
         panel.board.p1.setName(name1);
         panel.board.p2.setName(name2);
+    }
+    
+    private void changeTurn() {
+        if (turn == 0) {
+            turn = 1;
+            label.setText("White turn!");
+        } else {
+            turn = 0;
+            label.setText("Black turn!");
+        }
     }
 }

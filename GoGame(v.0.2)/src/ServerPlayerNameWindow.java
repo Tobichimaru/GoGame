@@ -11,6 +11,7 @@ public class ServerPlayerNameWindow extends Dialog {
         add(name);
         add(b);
         pack();
+        setLocationRelativeTo(null);
     }
 
     public boolean action(Event e, Object o) {

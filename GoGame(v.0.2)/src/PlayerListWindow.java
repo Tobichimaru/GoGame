@@ -35,6 +35,7 @@ class PlayerListWindow extends JDialog {
         
         add(panel);
         setSize(400, 400);
+        setLocationRelativeTo(null);
     }
     
 }

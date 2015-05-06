@@ -15,19 +15,19 @@ public class WinnerDialog extends Dialog {
         add(textScore);
         add(b);
         pack();
+        setLocationRelativeTo(null);
     }   
     
     public WinnerDialog(String playerName) {
         super(new Frame("Winner!"), "Winner!", true);
 
-        textWinner = new Label(playerName + " won!");
-        textScore = new Label("Won by resign!");
+        textWinner = new Label(playerName + " won by resign!");
 
         setLayout(new FlowLayout());
         add(textWinner);
-        add(textScore);
         add(b);
         pack();
+        setLocationRelativeTo(null);
     }   
 	
     public boolean action(Event e, Object o) {
