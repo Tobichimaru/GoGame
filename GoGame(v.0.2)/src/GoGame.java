@@ -4,6 +4,8 @@ import java.io.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GoGame extends JFrame implements IGoGame, MouseListener {
     private MenuBar menubar;
@@ -114,8 +116,14 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
             } else if (e.target == redoItem) {
                 Redo();
             } else if (e.target == howtoItem) {
-                HelpWindow helpWindow = new HelpWindow();
-                helpWindow.show();
+                HelpWindow helpWindow;
+                try {
+                    helpWindow = new HelpWindow();
+                     helpWindow.show();
+                } catch (IOException ex) {
+                    Logger.getLogger(GoGame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+               
             } else if (e.target == resignItem) {
                 new WinnerDialog(panel.board.p2.getName()).show();
             }
