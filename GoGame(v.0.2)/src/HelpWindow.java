@@ -1,45 +1,91 @@
 
 import java.awt.BorderLayout;
-import java.awt.Image;
-import javax.swing.ImageIcon;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 /**
  *
  * @author Saia
  */
 public class HelpWindow extends JFrame {
+    JButton next, prev;
+    JPanel a,b;
+    int page;
+    JEditorPane editorPane;
+    JScrollPane editorScrollPane;
 
-    public HelpWindow() {
-        JLabel text = new JLabel("<html>" 
-            + "&nbsp Го - стратегическая настольная игра, возникшая в древнем Китае. <br>"
-            + "&nbsp Доска - игровое поле, состоящее из 19-ти вертикальных и 19-ти горизонтальных линий. <br>"
-            + "&nbsp 1. Игра начинается на пустой доске.<br>"
-            + "&nbsp 2. Первыми ходят черные, ставя камень на пересечение линий в любую точку доски. Затем ходы делаются по очереди. Однажды поставленные камни не передвигаются.<br>"
-            + "&nbsp 3. Цель игры - обрести контроль над большей частью незанятых пересечений линий(территории), чем у противника. <br>"
-            + "&nbsp 4. Камень, у которого все соседние камни - камни противоположного цвета, считается захваченным и снимается с доск<br>"
-            + "&nbsp 5. Нельзя совершать самоубийство, то есть нельзя делать ход, который приводит к захвату собственной группы. Однако, его можно делать, если этим ходом захватывается камень или гpуппа пpотивника. <br>"
-            + "&nbsp 6. Hе pазpешается совеpшать ход, ведущий к повтоpению позиции (правило Ко). <br>"
-            + "&nbsp 7. Игра заканчивается тогда, когда на доске не осталось ни одного хода, который бы вел либо к увеличению либо к уменьшению чей-то территории. <br>"
-            + "&nbsp 8. В любой момент игрок белыми и черными камнями может пропускать ход (пасовать), а также признать свое поражение (сдаться). После двух пасов подряд игра заканчивается. <br>"
-            + "&nbsp 9. В конце паpтии захваченные каждым игpоком камни выставляются на теppитоpию пpотивника, уменьшая ее. <br>"
-            + "&nbsp 10. Размер компенсации (коми) за право первого хода либо же величина форы определяются перед началом партии. <br>"
-            + "&nbsp Размер коми - 5.5"
-            + " </html>");
-
-        setLayout(new BorderLayout());
-        
-        ImageIcon image = new ImageIcon("src/go.jpg");
-        JLabel imagelabel = new JLabel(image);
-        
-        add(imagelabel, BorderLayout.NORTH);
-        add(text, BorderLayout.SOUTH);
+    public HelpWindow() throws IOException {
+        page = 1;
         
         setTitle("How to play?");
-        setSize(600, 600);
         setResizable(false);
+        
+        setLayout(new BorderLayout());
+        
+        a = new JPanel(new BorderLayout());
+        b = new JPanel(new FlowLayout());
+        add(a, BorderLayout.CENTER);
+        add(b, BorderLayout.SOUTH); 
+ 
+        editorPane = new JEditorPane();
+        File localFile = new File("src\\Help\\1.html");
+        editorPane.setPage("file:///" + localFile.getAbsolutePath());
+        
+        a.add(editorPane);
+        
+        prev = new JButton();
+        next = new JButton();
+        prev.setText("Назад");
+        next.setText("Вперед");
+        
+        next.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                page++;
+                try {
+                    File localFile = new File("src\\Help\\" + Integer.toString(page) + ".html");
+                    editorPane.setPage("file:///" + localFile.getAbsolutePath());
+                } catch (IOException ex) {
+                }
+                prev.show();
+                next.show();
+                if (page == 1) prev.hide();
+                if (page == 8) next.hide();
+            }
+        });
+        prev.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                page--;
+                try {
+                    File localFile = new File("src\\Help\\" + Integer.toString(page) + ".html");
+                    editorPane.setPage("file:///" + localFile.getAbsolutePath());
+                } catch (IOException ex) {
+                }
+                prev.show();
+                next.show();
+                if (page == 1) prev.hide();
+                if (page == 8) next.hide();
+            }
+        });
+        
+        b.add(prev);
+        b.add(next);
+        
+        prev.show();
+        next.show();
+        if (page == 1) prev.hide();
+        if (page == 8) next.hide();
+        
+        setDefaultLookAndFeelDecorated(true);
         setLocationRelativeTo(null);
         setVisible(true);
     }   

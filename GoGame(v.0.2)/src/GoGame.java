@@ -72,7 +72,7 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         m2.add(resignItem);
         menubar.add(m2);
         
-        howtoItem = new MenuItem("How to play?");
+        howtoItem = new MenuItem("How to play? (RUS)");
         m3 = new Menu("Help");
         m3.add(howtoItem);
         menubar.add(m3);
