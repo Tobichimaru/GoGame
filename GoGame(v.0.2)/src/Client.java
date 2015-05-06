@@ -10,13 +10,13 @@ import java.util.Scanner;
 /**
  * Обеспечивает работу программы в режиме клиента
  * 
- * @author Влад
+ * @author Saia
  */
 public class Client {
     private BufferedReader in;
     private PrintWriter out;
     private Socket socket;
-    private String name;
+    private String id;
 
     /**
      * Запрашивает у пользователя ник и организовывает обмен сообщениями с
@@ -29,43 +29,33 @@ public class Client {
                 socket = new Socket("localhost", 9991);
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(socket.getOutputStream(), true);
+                
+                Resender resender = new Resender();
+                resender.start();
 
-
-                ServerPlayerNameWindow window = new ServerPlayerNameWindow();
-                String id = in.readLine();
-                window.setName(id);
-                window.show();
-                name = window.getName();
-                out.println(name);
+                id = in.readLine();
 
                 out.println("list");
 
-
                 int n = Integer.valueOf(in.readLine());
-                System.out.println(n);
                 String str = new String();
                 LinkedList<String> names = new LinkedList<>();
 
-                System.out.println("List if players:");
                 for (int i = 0; i < n; i++) {
                     str = in.readLine();
-                    names.add(str);
-                    System.out.println(str);
+                    if (!str.equals(id)) 
+                        names.add(str);
                 }
-               
-                while (true) {
-                     str = scan.nextLine();
-                }
-//                for (String s : names) {
-//                    if (str.equals(s)) {
-//                        GoGame game = new GoGame(true);
-//                        game.setSocket(socket, in, out);
-//                        game.setPlayers(name, s);
-//                        while (true) {
-//
-//                        }
-//                    }
-//                }
+                
+                PlayerListWindow window = new PlayerListWindow(n, names);
+                String opp_name = window.getChoise();
+                out.println("connect");
+                out.println(opp_name);
+                GoGame game = new GoGame(true);
+                game.setSocket(socket, in, out);
+                game.setInfo("Wait for opponent's turn!");
+                        while (true) {
+                        }
 
         } catch (Exception e) {
                 e.printStackTrace();

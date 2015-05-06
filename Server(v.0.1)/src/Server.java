@@ -66,14 +66,14 @@ public class Server {
      * Расширяет Thread и в методе run() получает информацию от пользователя и
      * пересылает её другим
      * 
-     * @author Влад
+     * @author Saia
      */
     private class Connection extends Thread {
         private BufferedReader in;
         private PrintWriter out;
         private Socket socket;
 
-        public String name = "";
+        public String str_id = "";
         private int id;
 
         /**
@@ -105,8 +105,8 @@ public class Server {
         @Override
         public void run() {
             try {
-                out.println(Integer.toString(id));
-                name = in.readLine();
+                str_id = Integer.toString(id);
+                out.println(str_id);
 
                 String str = new String();
                 while (true) {
@@ -117,25 +117,51 @@ public class Server {
                         Iterator<Connection> iter = connections.iterator();
                         out.println(Integer.toString(connections.size()));
                         while(iter.hasNext()) {
-                            out.println(iter.next().name);
+                            out.println(iter.next().str_id);
                         }
                     } else if (str.equals("connect")) {
+                        String opp_id = in.readLine();
                         Iterator<Connection> iter = connections.iterator();
-                        out.println(Integer.toString(connections.size()));
-                        while(iter.hasNext()) {
-                            out.println(iter.next().name);
+                        Connection con = null;
+                        while (iter.hasNext()) {
+                            con = iter.next();
+                            if (con.str_id.equals(opp_id)) {
+                                break;
+                            }
+                        }
+                        con.out.println("request");
+                        con.out.println(str_id);
+                        while (true) {
+                            out.println(con.in.readLine()); //read from opponent, to client
+                            str = in.readLine();
+                            con.out.println(str); // read from client, to opponent
+                            if (str.equals("break")) {
+                                break;
+                            }
                         }
                     } else if (str.equals("request")) {
+                        String opp_name = in.readLine();
                         Iterator<Connection> iter = connections.iterator();
-                        out.println(Integer.toString(connections.size()));
-                        while(iter.hasNext()) {
-                            out.println(iter.next().name);
+                        Connection con = null;
+                        while (iter.hasNext()) {
+                            con = iter.next();
+                            if (con.str_id.equals(opp_name)) {
+                                break;
+                            }
+                        }
+                        while (true) {
+                            str = in.readLine();
+                            con.out.println(str); // read from client, to opponent
+                            if (str.equals("break")) {
+                                break;
+                            }
+                            out.println(con.in.readLine()); //read from opponent, to client
                         }
                     } else {
                         synchronized(connections) {
                             Iterator<Connection> iter = connections.iterator();
                             while(iter.hasNext()) {
-                                ((Connection) iter.next()).out.println(name + ": " + str);
+                                ((Connection) iter.next()).out.println(str_id + ": " + str);
                             }
                         }
                     }
@@ -144,7 +170,7 @@ public class Server {
                 synchronized(connections) {
                     Iterator<Connection> iter = connections.iterator();
                     while(iter.hasNext()) {
-                        ((Connection) iter.next()).out.println(name + " has left");
+                        ((Connection) iter.next()).out.println(str_id + " has left");
                     }
                 }
             } catch (IOException e) {
@@ -162,12 +188,7 @@ public class Server {
                 in.close();
                 out.close();
                 socket.close();
-
                 connections.remove(this);
-//                if (connections.size() == 0) {
-//                        Server.this.closeAll();
-//                        System.exit(0);
-//                }
             } catch (Exception e) {
                 System.err.println("Потоки не были закрыты!");
             }

@@ -26,6 +26,7 @@ public class HelpWindow extends JFrame {
         page = 1;
         
         setTitle("How to play?");
+        setSize(620, 675);
         setResizable(false);
         
         setLayout(new BorderLayout());
@@ -85,7 +86,6 @@ public class HelpWindow extends JFrame {
         if (page == 1) prev.hide();
         if (page == 8) next.hide();
         
-        setDefaultLookAndFeelDecorated(true);
         setLocationRelativeTo(null);
         setVisible(true);
     }   

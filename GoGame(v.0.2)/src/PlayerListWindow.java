@@ -12,30 +12,37 @@ import javax.swing.JPanel;
  */
 class PlayerListWindow extends JDialog {
     private JPanel panel;
+    private LinkedList<JButton> buttons;
+    private String chosen;
 
     public PlayerListWindow(int n, LinkedList<String> names) {
         panel = new JPanel();
         panel.setLayout(new FlowLayout()); 
         
- 
+        buttons = new LinkedList<>();
+        int i = 0;
         JButton button;
         for (String s : names) { 
             button = new JButton(s);
-            System.out.println(s);
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    chosen = ((JButton) e.getSource()).getText();
                     hide();
                     dispose();
-                    new GoGame(true);
                 }
             });
             panel.add(button); 
+            buttons.add(button);
         }
         
         add(panel);
         setSize(400, 400);
         setLocationRelativeTo(null);
+    }
+    
+    public String getChoise() {
+        return chosen;
     }
     
 }
