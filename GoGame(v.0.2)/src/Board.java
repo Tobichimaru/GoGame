@@ -86,7 +86,8 @@ public class Board extends Component implements IBoard, Serializable {
     * Play() method returns true if the stone was sucessfully placed on board, 
     * else returns false;
     */
-    public boolean Play(int x, int y, int color, boolean rewrite) {    
+    public boolean Play(int x, int y, int color, boolean rewrite) { 
+        System.out.println("play");
         p1.setPass(false);
         p2.setPass(false);
         

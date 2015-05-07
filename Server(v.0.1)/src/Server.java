@@ -13,6 +13,7 @@ public class Server {
 
     private List<Connection> connections = 
         Collections.synchronizedList(new ArrayList<Connection>());
+    private ArrayList<Boolean> playble = new ArrayList<>(); 
     private ServerSocket server;
     private int id = 0;
 
@@ -28,6 +29,7 @@ public class Server {
                 id++;
                 Connection con = new Connection(socket, id);
                 connections.add(con);
+                playble.add(Boolean.TRUE);
                 con.start();
             }
         } catch (IOException e) {
@@ -85,6 +87,7 @@ public class Server {
         public Connection(Socket socket, int id) {
             this.socket = socket;
             this.id = id;
+            str_id = Integer.toString(id);
             try {
                 in = new BufferedReader(new InputStreamReader(
                     socket.getInputStream()));
@@ -105,73 +108,48 @@ public class Server {
         @Override
         public void run() {
             try {
-                str_id = Integer.toString(id);
+                System.out.println(str_id);
                 out.println(str_id);
+                
+                while (connections.size() < 2) {}
+                Iterator<Connection> iter = connections.iterator(), jtr;
+                Connection first = null, second = null;
+                while (iter.hasNext()) {
+                    first = iter.next();
+                    if (playble.get(connections.indexOf(first))) {
+                        jtr = iter;
+                        boolean f = false;
+                        while (jtr.hasNext()) {
+                            f = false;
+                            second = jtr.next();
+                            if (!second.str_id.equals(first.str_id) && 
+                                    playble.get(connections.indexOf(second)) ) {
+                                playble.set(connections.indexOf(first), false);
+                                playble.set(connections.indexOf(second), false);
 
-                String str = new String();
-                while (true) {
-                    str = in.readLine();
-                    if (str.equals("exit")) {
-                        break;
-                    } else if (str.equals("list")) {
-                        Iterator<Connection> iter = connections.iterator();
-                        out.println(Integer.toString(connections.size()));
-                        while(iter.hasNext()) {
-                            out.println(iter.next().str_id);
-                        }
-                    } else if (str.equals("connect")) {
-                        String opp_id = in.readLine();
-                        Iterator<Connection> iter = connections.iterator();
-                        Connection con = null;
-                        while (iter.hasNext()) {
-                            con = iter.next();
-                            if (con.str_id.equals(opp_id)) {
+                                first.out.println(second.str_id);
+                                first.out.println("black");
+
+                                second.out.println(first.str_id);
+                                second.out.println("white");
+                                f = true;
                                 break;
                             }
-                        }
-                        con.out.println("request");
-                        con.out.println(str_id);
-                        while (true) {
-                            out.println(con.in.readLine()); //read from opponent, to client
-                            str = in.readLine();
-                            con.out.println(str); // read from client, to opponent
-                            if (str.equals("break")) {
-                                break;
-                            }
-                        }
-                    } else if (str.equals("request")) {
-                        String opp_name = in.readLine();
-                        Iterator<Connection> iter = connections.iterator();
-                        Connection con = null;
-                        while (iter.hasNext()) {
-                            con = iter.next();
-                            if (con.str_id.equals(opp_name)) {
-                                break;
-                            }
-                        }
-                        while (true) {
-                            str = in.readLine();
-                            con.out.println(str); // read from client, to opponent
-                            if (str.equals("break")) {
-                                break;
-                            }
-                            out.println(con.in.readLine()); //read from opponent, to client
-                        }
-                    } else {
-                        synchronized(connections) {
-                            Iterator<Connection> iter = connections.iterator();
-                            while(iter.hasNext()) {
-                                ((Connection) iter.next()).out.println(str_id + ": " + str);
-                            }
+                            if (f) break;
                         }
                     }
                 }
-
-                synchronized(connections) {
-                    Iterator<Connection> iter = connections.iterator();
-                    while(iter.hasNext()) {
-                        ((Connection) iter.next()).out.println(str_id + " has left");
+                String str = null;
+                while (true) {
+                    str = first.in.readLine();
+                    System.out.println(str);
+                    if (str.equals("exit")) {
+                        break;
                     }
+                    second.out.println(str); // read from client, to opponent
+                    str = second.in.readLine();
+                    System.out.println(str);
+                    first.out.println(str); //read from opponent, to client
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -188,7 +166,9 @@ public class Server {
                 in.close();
                 out.close();
                 socket.close();
+                int pos = connections.indexOf(this);
                 connections.remove(this);
+                playble.remove(pos);
             } catch (Exception e) {
                 System.err.println("Потоки не были закрыты!");
             }

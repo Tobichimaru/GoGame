@@ -89,9 +89,9 @@ public class Stone extends Component implements Serializable {
     
     public void print() { 
         System.out.print("Stone: ");
-        System.out.print(xpos);
+        System.out.print(x);
         System.out.print(' ');
-        System.out.print(ypos);
+        System.out.print(y);
         System.out.print(' ');
         System.out.println(color);
     }
@@ -107,4 +107,19 @@ public class Stone extends Component implements Serializable {
         return hash;
     }
     
+    @Override
+    public String toString() {
+        return Integer.toString(x) + ' ' +Integer.toString(y) + ' ' 
+                + Integer.toString(color);
+    }
+    
+    public void fromString(String s) {
+        int p = s.indexOf(" ");
+        x = Integer.parseInt(s.substring(0, p));
+        s = s.substring(p+1);
+        p = s.indexOf(" ");
+        y = Integer.parseInt(s.substring(0, p));
+        s = s.substring(p+1);
+        color = Integer.parseInt(s);
+    }
 }

@@ -16,15 +16,19 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     private Image w, b, img;
     private int turn;
     private DrawPanel panel;
+    private boolean over = false;
     
     private static final long serialVersionUID = -250003671167959230L;
-    private BufferedReader in;
-    private PrintWriter out;
-    private Socket socket;
+    public BufferedReader in;
+    public PrintWriter out;
+    public Socket socket;
+    private int playerColor;
+    private boolean server;
     
     private JLabel label;
     
     public GoGame(boolean server) {
+        this.server = server;
         img = Toolkit.getDefaultToolkit().getImage("src\\board.png");
         w = Toolkit.getDefaultToolkit().getImage("src\\white.png"); 
         b = Toolkit.getDefaultToolkit().getImage("src\\black.png");
@@ -156,6 +160,13 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     
     @Override
     public void mouseClicked(MouseEvent e) {
+        System.out.print(turn);
+        System.out.print(' ');
+        System.out.println(playerColor);
+        if (server && turn != playerColor) {
+            return;
+        }
+         System.out.println("processing");
         if (e.getX() < xmin || e.getY() < ymin || e.getX() > xmax || e.getY() > ymax) {
             return;
         }
@@ -164,6 +175,12 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         int y = ((int)(e.getY()/cellsize)) * cellsize - ymargin;
         
         if (panel.board.Play(x, y, turn, false)) {
+            if (server) {
+                System.out.println("Played");
+                Stone s = new Stone(x, y, x/cellsize - 1, y/cellsize - 1, turn);
+                out.println(s.toString());
+                setInfo("Wait for opponent's turn!");
+            } 
             changeTurn();
         }
         panel.repaint();
@@ -186,6 +203,7 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         } else {
             new WinnerDialog(panel.board.p2.getName(), p1_score, p2_score).show();
         }
+        over = true;
     }
     
     @Override
@@ -279,5 +297,26 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
             turn = 0;
             label.setText("Black turn!");
         }
+    }
+
+    void setInfo(String message) {
+        label.setText(message);
+    }
+
+    void setPlayerColor(int i) {
+        playerColor = i;
+    }
+
+    boolean isOver() {
+        return over;
+    }
+    
+    public void recieveMassage(String str) {
+        Stone s = new Stone();
+        s.fromString(str);
+        s.print();
+        panel.board.Play(s.getX(), s.getY(), turn, false);
+        setInfo("Your turn!");
+        changeTurn();
     }
 }
