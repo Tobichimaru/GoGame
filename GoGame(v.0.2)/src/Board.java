@@ -9,6 +9,11 @@ import java.util.Objects;
 import java.util.Queue;
 import javax.swing.JPanel;
 
+/**
+ * Класс, реализующий доску для игры в Go.
+ *
+ * @author Saia
+ */
 public class Board extends Component implements IBoard, Serializable {
     private Image board_img, white_stone, black_stone;
     private LinkedList<Stone> moves_stack;
@@ -82,10 +87,10 @@ public class Board extends Component implements IBoard, Serializable {
         }
     }
 
-    /*
-    * Play() method returns true if the stone was sucessfully placed on board, 
-    * else returns false;
-    */
+    /**
+     * Play() method returns true if the stone was sucessfully placed on board, 
+     * else returns false;
+     */
     public boolean Play(int x, int y, int color, boolean rewrite) { 
         System.out.println("play");
         p1.setPass(false);
@@ -126,10 +131,10 @@ public class Board extends Component implements IBoard, Serializable {
         return true;
     }
     
-    /*
-    * isSurrounded() method returns 1 if the stone grop is surrounded, 
-    * else returns 0;
-    */
+    /**
+     * isSurrounded() method returns 1 if the stone grop is surrounded, 
+     * else returns 0;
+     */
     private int isSurrounded(int x, int y, int color, boolean delete) {
         Stone curr = new Stone();
         if (x < 0 || y < 0 || x > 18 || y > 18) {
@@ -149,12 +154,12 @@ public class Board extends Component implements IBoard, Serializable {
     }
     
     
-    /*
-    * findGroup(Stone s) finds a connected group of given stone. If this group
-    * is surrounded, this method remove the gruop of stones from the board and
-    * returns true. In other case this group is remain on boerd and method 
-    * retuns false;
-    */
+    /**
+     * findGroup(Stone s) finds a connected group of given stone. If this group
+     * is surrounded, this method remove the gruop of stones from the board and
+     * returns true. In other case this group is remain on boerd and method 
+     * retuns false;
+     */
     private boolean findGroup(Stone s, boolean delete) {
         initializeMarks();
         q.clear();
@@ -191,11 +196,11 @@ public class Board extends Component implements IBoard, Serializable {
         return true;
     } 
     
-    /*
-    * This method checks the stone on existance. If the stone satisfy 
-    * requerements, than it will be added in the queue. If checked place is
-    * empty - return 0, else return 1.
-    */
+    /**
+     * This method checks the stone on existance. If the stone satisfy 
+     * requerements, than it will be added in the queue. If checked place is
+     * empty - return 0, else return 1.
+     */
     private int checkNeighborStone(int x, int y, int color) {
         if (x < 0 || y < 0 || x > 18 || y > 18) {
             return 1;

@@ -1,4 +1,8 @@
-
+/**
+ * Интерфейс для класса GoGame
+ *
+ * @author Saia
+ */
 public interface IGoGame {
     public final int cellsize = 28,
         xmargin = 38, ymargin = 46,

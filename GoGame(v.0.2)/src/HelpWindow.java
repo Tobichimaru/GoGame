@@ -12,7 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 /**
- *
+ * Класс справки.
+ * 
  * @author Saia
  */
 public class HelpWindow extends JFrame {

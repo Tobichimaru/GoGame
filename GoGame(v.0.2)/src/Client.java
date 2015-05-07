@@ -78,8 +78,6 @@ public class Client {
     /**
      * Класс в отдельной нити пересылает все сообщения от сервера в консоль.
      * Работает пока не будет вызван метод setStop().
-     * 
-     * @author Влад
      */
     private class Resender extends Thread {
         private boolean stoped;

@@ -7,6 +7,11 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Основной класс главного окна программы.
+ *
+ * @author Saia
+ */
 public class GoGame extends JFrame implements IGoGame, MouseListener {
     private MenuBar menubar;
     private MenuItem newGameItem, restartGameItem, loadGameItem, saveGameItem, exitGameItem;
@@ -53,6 +58,9 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         setVisible(true);
     }
     
+    /**
+    * Класс, реализующий создание меню
+    */
     private void syncMenu() {
         menubar = new MenuBar();
        

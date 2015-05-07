@@ -1,3 +1,8 @@
+/**
+ * Интерфейс для класса Board
+ *
+ * @author Saia
+ */
 public interface IBoard {
     public final int cellsize = 28;
     

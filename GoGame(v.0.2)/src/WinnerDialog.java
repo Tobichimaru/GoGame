@@ -1,5 +1,10 @@
 import java.awt.*;
 
+/**
+ * Класс для демонстрации счета и победиля игры.
+ *
+ * @author Saia
+ */
 public class WinnerDialog extends Dialog {
     Label textWinner, textScore;
     Button b = new Button("OK");

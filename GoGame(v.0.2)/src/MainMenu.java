@@ -7,6 +7,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
+ * Класс реализующий главное меню для выбора типа игры (локальный или по сети) 
+ * 
  * @author Saia
  */
 class MainMenu extends JFrame {
@@ -16,7 +18,6 @@ class MainMenu extends JFrame {
         panel = new JPanel();
         panel.setLayout(new GridLayout(2,2)); 
  
-        // к панели добавляем кнопку и устанавливаем для нее менеджер в верхнее расположение. 
         JButton local_game = new JButton("Local game");
         local_game.addActionListener(new ActionListener() {
             @Override

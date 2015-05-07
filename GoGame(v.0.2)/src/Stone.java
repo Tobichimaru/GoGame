@@ -4,6 +4,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+/**
+ * Класс, реализующий камни (игровые фигуры).
+ *
+ * @author Saia
+ */
 public class Stone extends Component implements Serializable {
     private int color; // 0 black 1 white
     private int x, y; // position on board

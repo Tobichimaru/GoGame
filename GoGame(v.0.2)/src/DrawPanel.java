@@ -4,6 +4,8 @@ import javax.swing.JPanel;
 
 
 /**
+ * Панель для отрисовки различных элементов на доске.
+ * 
  * @author Saia
  */
 public class DrawPanel extends JPanel {
