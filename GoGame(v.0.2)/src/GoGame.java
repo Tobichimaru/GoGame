@@ -78,19 +78,20 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         m1.add(exitGameItem);
         menubar.add(m1);
 
-        undoItem = new MenuItem("Undo");
-        redoItem = new MenuItem("Redo");
+        m2 = new Menu("Edit");
+        if (!server) {
+            undoItem = new MenuItem("Undo");
+            redoItem = new MenuItem("Redo");
+            m2.add(undoItem);
+            m2.add(redoItem);
+        }
         passItem = new MenuItem("Pass");
         resignItem  = new MenuItem("Resign");
-        
-        m2 = new Menu("Edit");
-        m2.add(undoItem);
-        m2.add(redoItem);
         m2.add(passItem);
         m2.add(resignItem);
         menubar.add(m2);
         
-        howtoItem = new MenuItem("How to play? (RUS)");
+        howtoItem = new MenuItem("How to play?");
         m3 = new Menu("Help");
         m3.add(howtoItem);
         menubar.add(m3);
@@ -129,10 +130,6 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
                 panel.board.setImages(img, w, b);
             }  else if (e.target == exitGameItem) {
                 exitGame();
-            } else if (e.target == undoItem) {
-                Undo();
-            } else if (e.target == redoItem) {
-                Redo();
             } else if (e.target == howtoItem) {
                 HelpWindow helpWindow;
                 try {
@@ -144,6 +141,12 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
                
             } else if (e.target == resignItem) {
                 new WinnerDialog(panel.board.p2.getName()).show();
+            } if (!server) {
+                if (e.target == undoItem) {
+                  Undo();
+                } else if (e.target == redoItem) {
+                  Redo();
+                }
             }
         }
         panel.repaint();

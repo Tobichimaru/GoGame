@@ -45,8 +45,8 @@ public class HelpWindow extends JFrame {
         
         prev = new JButton();
         next = new JButton();
-        prev.setText("Назад");
-        next.setText("Вперед");
+        prev.setText("Previous");
+        next.setText("Next");
         
         next.addActionListener(new ActionListener() {
             @Override
@@ -60,7 +60,7 @@ public class HelpWindow extends JFrame {
                 prev.show();
                 next.show();
                 if (page == 1) prev.hide();
-                if (page == 8) next.hide();
+                if (page == 7) next.hide();
             }
         });
         prev.addActionListener(new ActionListener() {
@@ -75,7 +75,7 @@ public class HelpWindow extends JFrame {
                 prev.show();
                 next.show();
                 if (page == 1) prev.hide();
-                if (page == 8) next.hide();
+                if (page == 7) next.hide();
             }
         });
         
