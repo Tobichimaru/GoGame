@@ -32,27 +32,17 @@ public class GoGameTest {
     }
 
     /**
-     * Test of loadGame method, of class GoGame.
+     * Test of loadGame method and saveGame method, of class GoGame.
      */
     @Test
-    public void testLoadGame() {
+    public void testSaveLoadGame() {
         System.out.println("loadGame");
-        GoGame instance = null;
-        instance.loadGame();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of saveGame method, of class GoGame.
-     */
-    @Test
-    public void testSaveGame() {
-        System.out.println("saveGame");
-        GoGame instance = null;
+        GoGame instance = new GoGame(false);
+        instance.panel.board.Play(150, 150, 0, false);
         instance.saveGame();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.exitGame();
+        instance.loadGame();
+        Stone st = instance.panel.board.findStoneByPos(150, 150);
+        assertTrue(st.getX() == 150);
     }
-    
 }

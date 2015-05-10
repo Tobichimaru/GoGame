@@ -36,16 +36,10 @@ public class BoardTest {
     @Test
     public void testPlay() {
         System.out.println("Play");
-        int x = 0;
-        int y = 0;
-        int color = 0;
-        boolean rewrite = false;
-        Board instance = new Board();
-        boolean expResult = false;
-        boolean result = instance.Play(x, y, color, rewrite);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        GoGame game = new GoGame(false);
+        boolean result = game.panel.board.Play(100, 100, 0, false);
+        game.exitGame();
+        assertTrue(result);
     }
 
     /**
@@ -54,10 +48,12 @@ public class BoardTest {
     @Test
     public void testUndo() {
         System.out.println("Undo");
-        Board instance = new Board();
-        instance.Undo();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        GoGame game = new GoGame(false);
+        game.panel.board.Play(100, 100, 0, false);
+        game.panel.board.Undo();
+        Stone s = game.panel.board.findStoneByPos(100, 100);
+        game.exitGame();
+        assertTrue(s.getX() == 0);
     }
 
     /**
@@ -66,10 +62,13 @@ public class BoardTest {
     @Test
     public void testRedo() {
         System.out.println("Redo");
-        Board instance = new Board();
-        instance.Redo();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        GoGame game = new GoGame(false);
+        game.panel.board.Play(100, 100, 0, false);
+        game.panel.board.Undo();
+        game.panel.board.Redo();
+        Stone s = game.panel.board.findStoneByPos(100, 100);
+        game.exitGame();
+        assertTrue(s.getX() == 100);
     }
 
     /**
@@ -78,13 +77,12 @@ public class BoardTest {
     @Test
     public void testRemoveStone() {
         System.out.println("removeStone");
-        Stone s = null;
-        Board instance = new Board();
-        boolean expResult = false;
-        boolean result = instance.removeStone(s);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        GoGame game = new GoGame(false);
+        game.panel.board.Play(100, 100, 0, false);
+        Stone st = game.panel.board.findStoneByPos(100, 100);
+        boolean result = game.panel.board.removeStone(st);
+        game.exitGame();
+        assertTrue(result);
     }
 
     /**
@@ -93,10 +91,12 @@ public class BoardTest {
     @Test
     public void testClear() {
         System.out.println("clear");
-        Board instance = new Board();
-        instance.clear();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        GoGame game = new GoGame(false);
+        game.panel.board.Play(100, 100, 0, false);
+        game.panel.board.clear();
+        Stone st = game.panel.board.findStoneByPos(100, 100);
+        game.exitGame();
+        assertTrue(st.getX() == 0);
     }
 
     /**
@@ -105,12 +105,10 @@ public class BoardTest {
     @Test
     public void testGetTurn() {
         System.out.println("getTurn");
-        Board instance = new Board();
-        int expResult = 0;
-        int result = instance.getTurn();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        GoGame game = new GoGame(false);
+        int result = game.panel.board.getTurn();
+        game.exitGame();
+        assertEquals(0, result);
     }
 
     /**
@@ -119,10 +117,11 @@ public class BoardTest {
     @Test
     public void testCalculateScore() {
         System.out.println("calculateScore");
-        Board instance = new Board();
-        instance.calculateScore();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        GoGame game = new GoGame(false);
+        game.panel.board.calculateScore();
+        double result = game.panel.board.p2.getScore();
+        game.exitGame();
+        assertEquals(5.5, result, 0);
     }
     
 }

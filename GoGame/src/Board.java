@@ -257,6 +257,14 @@ public class Board extends Component implements IBoard, Serializable {
         return new Stone();
     }
     
+    public Stone findStoneByPos(int x, int y) {
+        for (Stone s : stone_list) {
+            if (s.getX() == x && s.getY() == y) 
+                return s;
+        }
+        return new Stone();
+    }
+    
     private void addStone(Stone s) {
         stone_list.add(s);
         while (curr_move < moves_stack.size()) {
@@ -345,7 +353,11 @@ public class Board extends Component implements IBoard, Serializable {
     }
     
     public int getTurn() {
-        return moves_stack.get(curr_move - 1).getColor();
+        if (curr_move > 1) {
+            return moves_stack.get(curr_move - 1).getColor();
+        } else {
+            return 0;
+        }
     }
     
     /**

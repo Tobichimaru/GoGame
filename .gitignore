@@ -56,3 +56,4 @@ Temporary Items
 *.netbeans_automatic_build
 GoGame(v.0.1)/build/classes/README
 /GoGame/dist/
+/GoGame/build/

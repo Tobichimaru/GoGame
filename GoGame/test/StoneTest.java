@@ -37,11 +37,11 @@ public class StoneTest {
     @Test
     public void testFromString() {
         System.out.println("fromString");
-        String s = "";
-        Stone instance = new Stone();
+        Stone instance = new Stone(10, 10, 1, 1, 0);
+        String s = instance.toString();
+        instance = new Stone();
         instance.fromString(s);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals(instance.getX(), 10);
     }
     
 }

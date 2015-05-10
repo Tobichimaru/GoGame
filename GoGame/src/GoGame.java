@@ -19,7 +19,7 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     
     private final Image w, b, img;
     private int turn;
-    private final DrawPanel panel;
+    final DrawPanel panel;
     private boolean over = false;
     
     private static final long serialVersionUID = -250003671167959230L;
