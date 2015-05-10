@@ -10,7 +10,7 @@ so being able to play on the network is simply necessary for a gaming applicatio
 My task was to write a client-server application for playing Go and study of issues 
 related to the theory of Go and subtleties of the rules.
 
-This aplication implements
+This aplication implements:
 1) Graphic interface including:
 • Display boards and stones
 • Processing of mouse clicks
