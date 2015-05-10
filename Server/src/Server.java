@@ -108,9 +108,6 @@ public class Server {
         @Override
         public void run() {
             try {
-                System.out.println(str_id);
-                out.println(str_id);
-                
                 while (connections.size() < 2) {}
                 Iterator<Connection> iter = connections.iterator(), jtr;
                 Connection first = null, second = null;
@@ -126,11 +123,7 @@ public class Server {
                                     playble.get(connections.indexOf(second)) ) {
                                 playble.set(connections.indexOf(first), false);
                                 playble.set(connections.indexOf(second), false);
-
-                                first.out.println(second.str_id);
                                 first.out.println("black");
-
-                                second.out.println(first.str_id);
                                 second.out.println("white");
                                 f = true;
                                 break;

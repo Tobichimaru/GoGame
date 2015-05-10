@@ -60,17 +60,18 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     private void syncMenu() {
         menubar = new MenuBar();
        
-        newGameItem = new MenuItem("New Game");
-        restartGameItem = new MenuItem("Restart Game");
-        loadGameItem = new MenuItem("Load Game");
-        saveGameItem = new MenuItem("Save Game");
-        exitGameItem = new MenuItem("Exit Game");
-
         m1 = new Menu("Game");
-        m1.add(newGameItem);
-        m1.add(restartGameItem);
-        m1.add(loadGameItem);
-        m1.add(saveGameItem);
+        if (!server) {
+            newGameItem = new MenuItem("New Game");
+            restartGameItem = new MenuItem("Restart Game");
+            loadGameItem = new MenuItem("Load Game");
+            saveGameItem = new MenuItem("Save Game");
+            m1.add(newGameItem);
+            m1.add(restartGameItem);
+            m1.add(loadGameItem);
+            m1.add(saveGameItem);
+        }
+        exitGameItem = new MenuItem("Exit Game");
         m1.add(exitGameItem);
         menubar.add(m1);
 
@@ -111,20 +112,16 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
                 Score();	
             }
             changeTurn();
-        } else if (e.target == saveGameItem) {
+        } else if (e.target == saveGameItem && !server) {
             saveGame();
         } else {
             panel.board.p1.setPass(false);
             panel.board.p2.setPass(false);
             
-            if (e.target == newGameItem) {
-                newGame();
-            } else if (e.target == restartGameItem) {
-                restartGame();
-            } else if (e.target == loadGameItem) {
-                loadGame();
-                panel.board.setImages(img, w, b);
-            }  else if (e.target == exitGameItem) {
+            if (e.target == exitGameItem) {
+                if (server) {
+                    over = true;
+                }
                 exitGame();
             } else if (e.target == howtoItem) {
                 HelpWindow helpWindow;
@@ -138,7 +135,14 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
             } else if (e.target == resignItem) {
                 new WinnerDialog(panel.board.p2.getName()).show();
             } if (!server) {
-                if (e.target == undoItem) {
+                if (e.target == newGameItem) {
+                    newGame();
+                } else if (e.target == restartGameItem) {
+                    restartGame();
+                } else if (e.target == loadGameItem) {
+                    loadGame();
+                    panel.board.setImages(img, w, b);
+                } else if (e.target == undoItem) {
                   Undo();
                 } else if (e.target == redoItem) {
                   Redo();

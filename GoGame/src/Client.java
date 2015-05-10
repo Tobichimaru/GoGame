@@ -1,3 +1,4 @@
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,7 +16,6 @@ public class Client {
     private BufferedReader in;
     private PrintWriter out;
     private Socket socket;
-    private String id;
     private GoGame game;
 
     /**
@@ -30,10 +30,7 @@ public class Client {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
                 
-            id = in.readLine();
             System.out.println("Waiting for opponent...");
-            String opp_id = in.readLine();
-            System.out.println(opp_id);
             
             String color = in.readLine();
             System.out.println(color);
