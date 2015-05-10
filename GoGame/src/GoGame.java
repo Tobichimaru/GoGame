@@ -8,7 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Основной класс главного окна программы.
  *
  * @author Saia
  */
@@ -18,9 +17,9 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     private MenuItem undoItem, redoItem, passItem, howtoItem, resignItem;
     private Menu m1, m2, m3;
     
-    private Image w, b, img;
+    private final Image w, b, img;
     private int turn;
-    private DrawPanel panel;
+    private final DrawPanel panel;
     private boolean over = false;
     
     private static final long serialVersionUID = -250003671167959230L;
@@ -28,9 +27,9 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
     public PrintWriter out;
     public Socket socket;
     private int playerColor;
-    private boolean server;
+    private final boolean server;
     
-    private JLabel label;
+    private final JLabel label;
     
     public GoGame(boolean server) {
         this.server = server;
@@ -58,9 +57,6 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         setVisible(true);
     }
     
-    /**
-    * Класс, реализующий создание меню
-    */
     private void syncMenu() {
         menubar = new MenuBar();
        

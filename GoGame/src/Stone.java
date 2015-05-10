@@ -5,7 +5,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
- * Класс, реализующий камни (игровые фигуры).
  *
  * @author Saia
  */
@@ -92,7 +91,7 @@ public class Stone extends Component implements Serializable {
         ypos = (int) o.readObject();
     }
     
-    public void print() { 
+    void print() { 
         System.out.print("Stone: ");
         System.out.print(x);
         System.out.print(' ');

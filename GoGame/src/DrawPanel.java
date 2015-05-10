@@ -4,7 +4,7 @@ import javax.swing.JPanel;
 
 
 /**
- * Панель для отрисовки различных элементов на доске.
+ * Panel for elements drawing
  * 
  * @author Saia
  */

@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 /**
- * Класс справки.
  * 
  * @author Saia
  */
@@ -85,7 +84,7 @@ public class HelpWindow extends JFrame {
         prev.show();
         next.show();
         if (page == 1) prev.hide();
-        if (page == 8) next.hide();
+        if (page == 7) next.hide();
         
         setLocationRelativeTo(null);
         setVisible(true);

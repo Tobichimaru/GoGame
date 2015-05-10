@@ -7,12 +7,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
- * Класс реализующий главное меню для выбора типа игры (локальный или по сети) 
  * 
  * @author Saia
  */
 class MainMenu extends JFrame {
-    private JPanel panel;
+    private final JPanel panel;
 
     public MainMenu() {
         panel = new JPanel();

@@ -5,7 +5,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
- * Класс, хранящий данные о игроке.
  *
  * @author Saia
  */

@@ -1,7 +1,6 @@
 import java.awt.*;
 
 /**
- * Класс для демонстрации счета и победиля игры.
  *
  * @author Saia
  */
@@ -35,6 +34,7 @@ public class WinnerDialog extends Dialog {
         setLocationRelativeTo(null);
     }   
 	
+    @Override
     public boolean action(Event e, Object o) {
         if (e.target instanceof Button) {
             hide();

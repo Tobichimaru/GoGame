@@ -10,7 +10,7 @@ import java.util.Queue;
 import javax.swing.JPanel;
 
 /**
- * Класс, реализующий доску для игры в Go.
+ * Implements the game board with grid
  *
  * @author Saia
  */
@@ -32,6 +32,12 @@ public class Board extends Component implements IBoard, Serializable {
         initialize();
     }
 
+    /**
+     * Constructor of class with all needed params
+     * @param img - image of board
+     * @param w - image of white stone
+     * @param b - image of balck stone
+     */
     Board(Image img, Image w, Image b, Player p1, Player p2) {
         initialize();
         board_img = img;
@@ -41,6 +47,12 @@ public class Board extends Component implements IBoard, Serializable {
         this.p2 = p2;
     }
     
+    /**
+     * Set all images for the board
+     * @param img - image of board
+     * @param w - image of white stone
+     * @param b - image of balck stone
+     */
     public void setImages(Image img, Image w, Image b) {
         board_img = img;
         white_stone = w;
@@ -76,6 +88,11 @@ public class Board extends Component implements IBoard, Serializable {
         }
     }
 
+    /**
+     * Paint all stones on the board
+     * @param g - object of Graphics
+     * @param a - panel for drawing
+     */
     protected void paintComponent(Graphics g, JPanel a) {
         g.drawImage(board_img, 0, 0, a);
         for (Stone s : stone_list) {
@@ -88,8 +105,13 @@ public class Board extends Component implements IBoard, Serializable {
     }
 
     /**
-     * Play() method returns true if the stone was sucessfully placed on board, 
-     * else returns false;
+     * Used for validation of stone
+     * @param x - the x-coordinate of stone on board
+     * @param y - the y-coordinate of stone on board
+     * @param color - the color of stone
+     * @param rewrite - true, if we place this stone for the first time
+     * @return true if the stone was sucessfully placed on board, 
+     * else returns false
      */
     public boolean Play(int x, int y, int color, boolean rewrite) { 
         System.out.println("play");
@@ -132,8 +154,12 @@ public class Board extends Component implements IBoard, Serializable {
     }
     
     /**
-     * isSurrounded() method returns 1 if the stone grop is surrounded, 
-     * else returns 0;
+     * Used for validation if the stone is surrounded by enemy's stones
+     * @param x - the x-coordinate of stone in array
+     * @param y - the y-coordinate of stone in array
+     * @param color - the color of stone
+     * @param delete - true if we are not allowed to delete the stone
+     * @return returns 1 if the stone grop is surrounded, else returns 0;
      */
     private int isSurrounded(int x, int y, int color, boolean delete) {
         Stone curr = new Stone();
@@ -153,12 +179,13 @@ public class Board extends Component implements IBoard, Serializable {
         return 1;
     }
     
-    
     /**
-     * findGroup(Stone s) finds a connected group of given stone. If this group
-     * is surrounded, this method remove the gruop of stones from the board and
-     * returns true. In other case this group is remain on boerd and method 
-     * retuns false;
+     * finds a connected group of given stone
+     * @param s - Stone for finding the group
+     * @param delete - true if we are not allowed to delete the stone
+     * @return If this group is surrounded, this method remove the group of 
+     * stones from the board and returns true. In other case this group is 
+     * remain on board and method retuns false;
      */
     private boolean findGroup(Stone s, boolean delete) {
         initializeMarks();
@@ -197,15 +224,18 @@ public class Board extends Component implements IBoard, Serializable {
     } 
     
     /**
-     * This method checks the stone on existance. If the stone satisfy 
-     * requerements, than it will be added in the queue. If checked place is
-     * empty - return 0, else return 1.
+     * This method checks the stone on existance. 
+     * @param x - the x-coordinate of stone in array
+     * @param y - the y-coordinate of stone in array
+     * @param color - the color of stone
+     * @return If the stone satisfy requerements, than it will be added in the 
+     * queue. If checked place is empty - return 0, else return 1.
      */
     private int checkNeighborStone(int x, int y, int color) {
         if (x < 0 || y < 0 || x > 18 || y > 18) {
             return 1;
         } 
-        Stone other = new Stone();
+        Stone other;
         if (stone_array[x][y] == -1) {
             return 0;
         }
@@ -246,8 +276,7 @@ public class Board extends Component implements IBoard, Serializable {
         stone_list.clear();
         hashes.clear();
         initializeArray();
-        
-        Stone s = new Stone();
+        Stone s;
         for (int i = 0; i < curr_move; i++) {
             s = moves_stack.get(i);
             Play(s.getX(), s.getY(), s.getColor(), true);
@@ -255,6 +284,9 @@ public class Board extends Component implements IBoard, Serializable {
     }
     
     
+    /**
+     * This method cancel the last move. 
+     */
     @Override
     public void Undo() {
         if (curr_move > 0) {
@@ -263,6 +295,9 @@ public class Board extends Component implements IBoard, Serializable {
         }
     }
 
+    /**
+     * This method returns the canceled move. 
+     */
     @Override
     public void Redo() {
         if (moves_stack.size() > curr_move) {
@@ -313,6 +348,9 @@ public class Board extends Component implements IBoard, Serializable {
         return moves_stack.get(curr_move - 1).getColor();
     }
     
+    /**
+     * This method calculates score in the end of the game
+     */
     public void calculateScore() {
         initializeMarks();
         for (int i = 0; i < 19; i++) {
@@ -330,7 +368,7 @@ public class Board extends Component implements IBoard, Serializable {
         terr_q.clear();
         terr_q.add(s);
         marks[s.getXPos()][s.getYPos()] = true;
-        Stone curr = new Stone();
+        Stone curr;
         white = 0;
         black = 0;
         int count = 0;
@@ -359,7 +397,7 @@ public class Board extends Component implements IBoard, Serializable {
         if (x < 0 || y < 0 || x > 18 || y > 18) {
             return 1;
         } 
-        Stone other = new Stone();
+        Stone other;
         if (marks[x][y] == false && stone_array[x][y] == -1) {
             other = new Stone(x, y, x, y, -1);
             terr_q.add(other);
