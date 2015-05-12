@@ -11,7 +11,12 @@ import java.util.logging.Logger;
  *
  * @author Saia
  */
-public class GoGame extends JFrame implements IGoGame, MouseListener {
+public class GoGame extends JFrame implements MouseListener {
+    public final int cellsize = 28,
+        xmargin = 38, ymargin = 46,
+        ymin = 55, ymax = 600,
+        xmin = 35, xmax = 560;
+    
     private MenuBar menubar;
     private MenuItem newGameItem, restartGameItem, loadGameItem, saveGameItem, exitGameItem;
     private MenuItem undoItem, redoItem, passItem, howtoItem, resignItem;
@@ -197,7 +202,6 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         panel.repaint();
     }
 	
-    @Override
     public void Score() {
         panel.board.calculateScore();
         double p1_score = panel.board.p1.getScore();
@@ -217,7 +221,6 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         over = true;
     }
     
-    @Override
     public void newGame() {
         panel.board.clear();
         panel.board = new Board(
@@ -228,13 +231,11 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         turn = 0;
     }
 
-    @Override
     public void restartGame() {
         turn = 0;
         panel.board.clear();
     }
 
-    @Override
     public void loadGame() {
         FileInputStream fis = null;
         try {
@@ -254,7 +255,6 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         changeTurn();
     }
 
-    @Override
     public void saveGame() {
         FileOutputStream fos = null;
         try {
@@ -270,20 +270,17 @@ public class GoGame extends JFrame implements IGoGame, MouseListener {
         }
     }
 
-    @Override
     public void exitGame() {
         hide();
         dispose();
         new MainMenu();
     }
 
-    @Override
     public void Undo() {
         panel.board.Undo();
         changeTurn();
     }
 
-    @Override
     public void Redo() {
         panel.board.Redo();
         changeTurn();

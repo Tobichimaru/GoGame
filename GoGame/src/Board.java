@@ -14,7 +14,9 @@ import javax.swing.JPanel;
  *
  * @author Saia
  */
-public class Board extends Component implements IBoard, Serializable {
+public class Board extends Component implements Serializable {
+    public final int cellsize = 28;
+    
     private Image board_img, white_stone, black_stone;
     private LinkedList<Stone> moves_stack;
     private ArrayList<Stone> stone_list, q;
@@ -295,7 +297,6 @@ public class Board extends Component implements IBoard, Serializable {
     /**
      * This method cancel the last move. 
      */
-    @Override
     public void Undo() {
         if (curr_move > 0) {
             curr_move--;
@@ -306,7 +307,6 @@ public class Board extends Component implements IBoard, Serializable {
     /**
      * This method returns the canceled move. 
      */
-    @Override
     public void Redo() {
         if (moves_stack.size() > curr_move) {
             curr_move++;
@@ -314,7 +314,6 @@ public class Board extends Component implements IBoard, Serializable {
         }
     }
 
-    @Override
     public boolean removeStone(Stone s) {
         int pos = stone_list.indexOf(s);
         if (pos != -1) {
