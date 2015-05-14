@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  * @author Saia
  */
 public class GoGame extends JFrame implements MouseListener {
-    public final int cellsize = 28,
+    private static final int cellsize = 28,
         xmargin = 38, ymargin = 46,
         ymin = 55, ymax = 600,
         xmin = 35, xmax = 560;
@@ -24,7 +24,7 @@ public class GoGame extends JFrame implements MouseListener {
     
     private final Image w, b, img;
     private int turn;
-    final DrawPanel panel;
+    public final DrawPanel panel;
     private boolean over = false;
     
     private static final long serialVersionUID = -250003671167959230L;
@@ -176,9 +176,6 @@ public class GoGame extends JFrame implements MouseListener {
     
     @Override
     public void mouseClicked(MouseEvent e) {
-        System.out.print(turn);
-        System.out.print(' ');
-        System.out.println(playerColor);
         if (server && turn != playerColor) {
             return;
         }
@@ -319,7 +316,7 @@ public class GoGame extends JFrame implements MouseListener {
         return over;
     }
     
-    public void recieveMassage(String str) {
+    public void receiveMessage(String str) {
         Stone s = new Stone();
         s.fromString(str);
         s.print();

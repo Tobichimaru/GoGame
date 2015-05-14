@@ -5,8 +5,8 @@ import java.awt.*;
  * @author Saia
  */
 public class WinnerDialog extends Dialog {
-    Label textWinner, textScore;
-    Button b = new Button("OK");
+    private final Label textWinner, textScore;
+    private final Button b = new Button("OK");
 
     public WinnerDialog(String playerName, double score1, double score2) {
         super(new Frame("Winner!"), "Winner!", true);
@@ -26,6 +26,7 @@ public class WinnerDialog extends Dialog {
         super(new Frame("Winner!"), "Winner!", true);
 
         textWinner = new Label(playerName + " won by resign!");
+        textScore = new Label();
 
         setLayout(new FlowLayout());
         add(textWinner);

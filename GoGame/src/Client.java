@@ -73,7 +73,7 @@ public class Client {
     }
 
     /**
-     * Класс в отдельной нити пересылает все сообщения от сервера в консоль.
+     * Класс в отдельной нити пересылает все сообщения от сервера.
      * Работает пока не будет вызван метод setStop().
      */
     private class Resender extends Thread {
@@ -84,7 +84,7 @@ public class Client {
         }
 
         /**
-        * Считывает все сообщения от сервера и печатает их в консоль.
+        * Считывает все сообщения от сервера.
         * Останавливается вызовом метода setStop()
         * 
         * @see java.lang.Thread#run()
@@ -97,8 +97,7 @@ public class Client {
                     str = in.readLine();
                     if (str == null) { continue;}
                     System.out.println(str);
-                    game.recieveMassage(str);
-                     System.out.println("fgfdgdf");
+                    game.receiveMessage(str);
                 }
             } catch (IOException e) {
                 System.err.println("Ошибка при получении сообщения.");

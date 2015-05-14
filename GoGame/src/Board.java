@@ -111,12 +111,11 @@ public class Board extends Component implements Serializable {
      * @param x - the x-coordinate of stone on board
      * @param y - the y-coordinate of stone on board
      * @param color - the color of stone
-     * @param rewrite - true, if we place this stone for the first time
+     * @param delete - true, if we place this stone for the first time
      * @return true if the stone was sucessfully placed on board, 
      * else returns false
      */
-    public boolean Play(int x, int y, int color, boolean rewrite) { 
-        System.out.println("play");
+    public boolean Play(int x, int y, int color, boolean delete) { 
         p1.setPass(false);
         p2.setPass(false);
         
@@ -128,7 +127,7 @@ public class Board extends Component implements Serializable {
         Stone s = new Stone(x, y, xpos, ypos, color);
         int other_color = (color == 0)? 1: 0;
         int surr_stones = 0;
-        if (rewrite) {
+        if (delete) {
             placeStone(s);
         } else { 
             addStone(s);
@@ -282,7 +281,7 @@ public class Board extends Component implements Serializable {
         stone_array[s.getXPos()][s.getYPos()] = 1;
     }
     
-    private void rewriteArray() {
+    private void deleteArray() {
         stone_list.clear();
         hashes.clear();
         initializeArray();
@@ -300,7 +299,7 @@ public class Board extends Component implements Serializable {
     public void Undo() {
         if (curr_move > 0) {
             curr_move--;
-            rewriteArray();
+            deleteArray();
         }
     }
 
@@ -310,7 +309,7 @@ public class Board extends Component implements Serializable {
     public void Redo() {
         if (moves_stack.size() > curr_move) {
             curr_move++;
-            rewriteArray();
+            deleteArray();
         }
     }
 

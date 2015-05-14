@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class Player implements Serializable {
     private String name;
     private double score;
-    boolean pass;
+    private boolean pass;
     
     private static final long serialVersionUID = -2518143646456679590L;
 

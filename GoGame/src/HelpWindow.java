@@ -9,18 +9,16 @@ import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 /**
  * 
  * @author Saia
  */
 public class HelpWindow extends JFrame {
-    JButton next, prev;
-    JPanel a,b;
-    int page;
-    JEditorPane editorPane;
-    JScrollPane editorScrollPane;
+    private JButton next, prev;
+    private final JPanel a,b;
+    private int page;
+    private JEditorPane editorPane;
 
     public HelpWindow() throws IOException {
         page = 1;
