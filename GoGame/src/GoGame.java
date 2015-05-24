@@ -302,6 +302,13 @@ public class GoGame extends JFrame implements MouseListener {
             turn = 0;
             label.setText("Black turn!");
         }
+        if (server) {
+            if (playerColor != turn) {
+                label.setText("Opponent's turn!");
+            } else {
+                label.setText("Your turn!");
+            }
+        }
     }
 
     void setInfo(String message) {
@@ -321,6 +328,7 @@ public class GoGame extends JFrame implements MouseListener {
         s.fromString(str);
         s.print();
         panel.board.Play(s.getX(), s.getY(), turn, false);
+        repaint();
         setInfo("Your turn!");
         changeTurn();
     }

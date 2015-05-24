@@ -26,7 +26,7 @@ public class Client {
         Scanner scan = new Scanner(System.in);
         try {
             // Подключаемся в серверу и получаем потоки(in и out) для передачи сообщений
-            socket = new Socket("localhost", 9991);
+            socket = new Socket("localhost", 80);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
                 
@@ -34,6 +34,9 @@ public class Client {
             
             String color = in.readLine();
             System.out.println(color);
+            
+            String opp_id = in.readLine();
+            System.out.println(opp_id);
             
             game = new GoGame(true);
             game.setSocket(socket, in, out);
@@ -43,6 +46,7 @@ public class Client {
             } else {
                 game.setInfo("Wait for opponent's turn!");
                 game.setPlayerColor(1);
+                out.println(opp_id);
             }
             
             Resender resender = new Resender();

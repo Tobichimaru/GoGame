@@ -23,7 +23,7 @@ public class Server {
     */
     public Server() {
         try {
-            server = new ServerSocket(9991);
+            server = new ServerSocket(80);
             while (true) {
                 Socket socket = server.accept();
                 id++;
@@ -124,7 +124,9 @@ public class Server {
                                 playble.set(connections.indexOf(first), false);
                                 playble.set(connections.indexOf(second), false);
                                 first.out.println("black");
+                                first.out.println(second.str_id);
                                 second.out.println("white");
+                                second.out.println(str_id);
                                 f = true;
                                 break;
                             }
@@ -133,14 +135,35 @@ public class Server {
                     }
                 }
                 String str = null;
-                while (true) {
+                Connection con = null;
+                if (second == null) {
                     str = first.in.readLine();
+                    System.out.println(str);
+                    iter = connections.iterator();
+                    while (iter.hasNext()) {
+                        con = iter.next();
+                        if (!con.str_id.equals(str)) {
+                            second = con;
+                            break;
+                        }
+                    }
+                }
+               
+                while (true) {
+                    str = null;
+                    while (str == null) {
+                         str = first.in.readLine();
+                    }
                     System.out.println(str);
                     if (str.equals("exit")) {
                         break;
                     }
                     second.out.println(str); // read from client, to opponent
-                    str = second.in.readLine();
+                    
+                    str = null;
+                    while (str == null) {
+                        str = second.in.readLine();
+                    }
                     System.out.println(str);
                     first.out.println(str); //read from opponent, to client
                 }
