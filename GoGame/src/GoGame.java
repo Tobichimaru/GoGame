@@ -179,7 +179,6 @@ public class GoGame extends JFrame implements MouseListener {
         if (server && turn != playerColor) {
             return;
         }
-         System.out.println("processing");
         if (e.getX() < xmin || e.getY() < ymin || e.getX() > xmax || e.getY() > ymax) {
             return;
         }
